@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Form } from "@/components/ui/form";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
+import Link from "next/link";
 
 export default function SignupPage() {
   const form = useForm({
@@ -84,12 +85,12 @@ export default function SignupPage() {
         </Button>
         <div className="mt-6 text-center text-gray-700">
           Already have an account?{" "}
-          <a
+          <Link
             href="/auth/login"
             className="text-green-900 font-medium hover:underline"
           >
             Sign in
-          </a>
+          </Link>
         </div>
       </div>
 

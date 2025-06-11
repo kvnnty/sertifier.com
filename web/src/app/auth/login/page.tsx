@@ -7,6 +7,7 @@ import { Form } from "@/components/ui/form";
 import Image from "next/image";
 import React from "react";
 import { useForm } from "react-hook-form";
+import Link from "next/link";
 
 export default function LoginPage() {
   const form = useForm({
@@ -61,9 +62,9 @@ export default function LoginPage() {
         </Button>
         <div className="mt-6 text-center text-gray-700">
           Don&apos;t have an account?{" "}
-          <a href="/auth/signup" className="text-green-900 font-medium hover:underline">
+          <Link href="/auth/signup" className="text-green-900 font-medium hover:underline">
             Sign up
-          </a>
+          </Link>
         </div>
       </div>
 
