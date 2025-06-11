@@ -100,7 +100,7 @@ export default function UserDashboard() {
         {suggestions.map((suggestion, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl shadow p-6 flex flex-col justify-between min-h-[200px]"
+            className="bg-white rounded-lg shadow p-6 flex flex-col justify-between min-h-[200px]"
           >
             <div
               ref={(el) => {
