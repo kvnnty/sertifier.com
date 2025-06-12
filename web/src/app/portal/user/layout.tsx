@@ -18,7 +18,7 @@ export default function UserPortalLayout({
         style={{ marginLeft: sidebarExpanded ? 280 : 70 }} // 256px = 16rem, 64px = 4rem
       >
         <TopBar />
-        <main className="flex-1 p-6 bg-gray-50 min-h-screen">{children}</main>
+        <main className="flex-1 bg-gray-50 min-h-screen">{children}</main>
       </div>
     </div>
   );

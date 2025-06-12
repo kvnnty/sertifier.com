@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -28,7 +29,7 @@ const menuItems = [
         />
       </svg>
     ),
-    href: "/dashboard",
+    href: "/portal/user",
   },
   {
     label: "Send Certificates",
@@ -59,7 +60,7 @@ const menuItems = [
         <path d="M2 12l10 7 10-7" />
       </svg>
     ),
-    href: "/campaigns",
+    href: "/portal/user/compaigns",
   },
   {
     label: "Verification Page",
@@ -180,6 +181,7 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
     null
   );
   const sidebarRef = React.useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   React.useEffect(() => {
     const sidebar = sidebarRef.current;
@@ -214,10 +216,12 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
             <Link
               key={item.label}
               href={item.href}
-              className="flex items-center gap-4 px-4 py-3 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-green-50 group-hover:w-64"
+              className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-green-50 group-hover:w-64 ${
+                pathname === item.href ? "bg-green-50" : ""
+              }`}
             >
               <span>{item.icon}</span>
-              <span className="ml-2 text-base font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+              <span className="text-base font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                 {item.label}
               </span>
             </Link>
@@ -258,7 +262,11 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
                     <Link
                       key={child.label}
                       href={child.href}
-                      className="flex items-center gap-2 px-2 py-2 text-gray-700 hover:bg-green-50 rounded-lg text-sm"
+                      className={`flex items-center gap-2 px-2 py-2 text-gray-700 hover:bg-green-50 rounded-lg text-sm ${
+                        pathname === child.href
+                          ? "bg-green-500 text-white hover:bg-green-600"
+                          : ""
+                      }`}
                     >
                       <svg
                         className="w-2 h-2 text-gray-400"
@@ -279,7 +287,11 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
       <div className="mb-6 flex-shrink-0">
         <Link
           href={settingsItem.href}
-          className="flex items-center gap-4 px-4 py-3 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-green-50 group-hover:w-64"
+          className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-green-50 group-hover:w-64 ${
+            pathname === settingsItem.href
+              ? "bg-green-500 text-white hover:bg-green-600"
+              : ""
+          }`}
         >
           <span>{settingsItem.icon}</span>
           <span className="ml-2 text-base font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
