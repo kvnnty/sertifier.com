@@ -13,6 +13,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import EmptyCompaign from "@/components/custom/portal/user/EmptyCompaign";
 
 const credentials = [
   {
@@ -222,10 +223,10 @@ export default function Campaigns() {
   };
 
   return (
-    <Tabs defaultValue="draft" onValueChange={handleTabChange}>
+    <Tabs defaultValue="all" onValueChange={handleTabChange}>
       <div className="">
         <div className="border-b border-gray-200 bg-white h-[90px] flex items-center justify-between px-8">
-          <Button className="hover:bg-white bg-[#428f7d] rounded-sm" size="sm">
+          <Button className="hover:bg-teal-700 bg-teal-600 rounded-sm" size="sm">
             Create New Campaign
           </Button>
           <TabsList className="">
@@ -287,10 +288,15 @@ export default function Campaigns() {
               />
             ))
           ) : (
-            <div className="col-span-4 text-center py-10">
-              <p className="text-gray-500 text-lg">
-                No campaigns found matching your criteria
-              </p>
+            <div className="col-span-4 flex justify-center items-center h-full">
+              <EmptyCompaign
+                title="No Campaigns Found"
+                description="It looks like there are no campaigns that match your search or filter criteria. Try adjusting your filters or search terms."
+                buttonText="Create New Campaign"
+                onButtonClick={() =>
+                  console.log("Create New Campaign from All Empty State")
+                }
+              />
             </div>
           )}
         </TabsContent>
@@ -309,8 +315,15 @@ export default function Campaigns() {
               />
             ))
           ) : (
-            <div className="col-span-4 text-center py-10">
-              <p className="text-gray-500 text-lg">No draft campaigns found</p>
+            <div className="col-span-4 flex justify-center items-center h-full">
+              <EmptyCompaign
+                title="No Draft Campaigns"
+                description="It looks like you don't have any draft campaigns yet. Get started by creating a new campaign."
+                buttonText="Create New Campaign"
+                onButtonClick={() =>
+                  console.log("Create New Campaign from Draft Empty State")
+                }
+              />
             </div>
           )}
         </TabsContent>
@@ -329,10 +342,15 @@ export default function Campaigns() {
               />
             ))
           ) : (
-            <div className="col-span-4 text-center py-10">
-              <p className="text-gray-500 text-lg">
-                No scheduled campaigns found
-              </p>
+            <div className="col-span-4 flex justify-center items-center h-full">
+              <EmptyCompaign
+                title="No Scheduled Campaigns"
+                description="There are no campaigns scheduled for future sending. Schedule a new campaign to appear here."
+                buttonText="Create New Campaign"
+                onButtonClick={() =>
+                  console.log("Create New Campaign from Scheduled Empty State")
+                }
+              />
             </div>
           )}
         </TabsContent>
@@ -348,14 +366,21 @@ export default function Campaigns() {
               />
             ))
           ) : (
-            <div className="col-span-4 text-center py-10">
-              <p className="text-gray-500 text-lg">No sent campaigns found</p>
+            <div className="col-span-4 flex justify-center items-center h-full">
+              <EmptyCompaign
+                title="No Sent Campaigns"
+                description="You haven't sent any campaigns yet. Once you send a campaign, it will appear here."
+                buttonText="Create New Campaign"
+                onButtonClick={() =>
+                  console.log("Create New Campaign from Sent Empty State")
+                }
+              />
             </div>
           )}
         </TabsContent>
       </div>
       {currentItems.length > 0 && (
-        <div className="flex justify-center items-center gap-4">
+        <div className="flex justify-center items-center gap-4 mb-6">
           <p className="font-medium font-sans text-gray-600">
             Total {totalPages}
           </p>
