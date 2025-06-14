@@ -1,11 +1,10 @@
 "use client";
 
 import { SetStateAction, useState } from "react";
-import TopBar from "@/components/custom/TopBar";
 import SimpleStatCard from "@/components/analytics/SimpleStatCard";
 import MetricCard from "@/components/analytics/MetricCard";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 const tabs = [
@@ -66,7 +65,7 @@ export default function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Centered Tabs Navigation */}
-      <div className="sticky top-[73px] bg-white border-b border-gray-200 z-40">
+      <div className="flex items-center justify-center sticky top-[85px] bg-white border-b border-gray-200 z-40 h-[85px]">
         <div className="ml-16 max-w-7xl mx-auto px-4">
           <div className="flex justify-center">
             <nav className="flex overflow-x-auto hide-scrollbar -mb-px">

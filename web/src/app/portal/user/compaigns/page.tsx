@@ -225,7 +225,7 @@ export default function Campaigns() {
   return (
     <Tabs defaultValue="all" onValueChange={handleTabChange}>
       <div className="">
-        <div className="border-b border-gray-200 bg-white h-[90px] flex items-center justify-between px-8">
+        <div className="sticky top-[85px] z-40 border-b border-gray-200 bg-white h-[90px] flex items-center justify-between px-8">
           <Button className="hover:bg-teal-700 bg-teal-600 rounded-sm" size="sm">
             Create New Campaign
           </Button>
