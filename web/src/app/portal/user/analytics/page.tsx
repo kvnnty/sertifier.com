@@ -1,12 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import TopBar from "@/components/custom/TopBar";
-import SimpleStatCard from "@/components/custom/portal/user/analytics/SimpleStatCard";
-import MetricCard from "@/components/custom/portal/user/analytics/MetricCard";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import CredentialsTab from "@/components/custom/portal/user/analytics/CredentialsTab";
 import SummaryTab from "@/components/custom/portal/user/analytics/SummaryTab";
 import RecipientEngagementTab from "@/components/custom/portal/user/analytics/RecipientEngagement";

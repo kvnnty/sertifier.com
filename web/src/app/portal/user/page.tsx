@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleTrigger,
-  CollapsibleContent,
 } from "@/components/ui/collapsible";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
