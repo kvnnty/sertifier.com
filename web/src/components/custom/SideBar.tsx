@@ -8,6 +8,20 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@/components/ui/collapsible";
+import {
+  PenTool,
+  FileText,
+  Package,
+  Plug,
+  Megaphone,
+  UserSquare,
+  Palette,
+  BookOpen,
+  Mail,
+  ScanQrCode,
+  Network,
+  LayoutPanelTop,
+} from "lucide-react";
 
 const menuItems = [
   {
@@ -76,7 +90,7 @@ const menuItems = [
         <path d="M8 12l2 2 4-4" />
       </svg>
     ),
-    href: "/verification",
+    href: "/portal/user/verification-page",
   },
   {
     label: "Recipients",
@@ -128,9 +142,23 @@ const dropdownItems = [
         <circle cx="12" cy="12" r="4" />
       </svg>
     ),
+
     children: [
-      { label: "Credential Designs", href: "/components/1" },
-      { label: " Credential Details", href: "/components/2" },
+      {
+        label: "Credential Designs",
+        href: "/portal/user/credential-designs",
+        icon: <Palette className="w-5 h-5" />,
+      },
+      {
+        label: " Credential Details",
+        href: "/portal/user/credential-details",
+        icon: <BookOpen className="w-5 h-5" />,
+      },
+      {
+        label: " Email Templates",
+        href: "/portal/user/email-templates",
+        icon: <Mail className="w-5 h-5" />,
+      },
     ],
   },
   {
@@ -147,10 +175,26 @@ const dropdownItems = [
       </svg>
     ),
     children: [
-      { label: "Collections", href: "/advanced/1" },
-      { label: "Integrations", href: "/advanced/2" },
-      { label: "Ads", href: "/advanced/2" },
-      { label: "Customer Portal", href: "/advanced/2" },
+      {
+        label: "Collections",
+        href: "/advanced/1",
+        icon: <ScanQrCode className="w-5 h-5" />,
+      },
+      {
+        label: "Integrations",
+        href: "/advanced/2",
+        icon: <Network className="w-5 h-5" />,
+      },
+      {
+        label: "Ads",
+        href: "/advanced/2",
+        icon: <Megaphone className="w-5 h-5" />,
+      },
+      {
+        label: "Customer Portal",
+        href: "/advanced/2",
+        icon: <LayoutPanelTop className="w-5 h-5" />,
+      },
     ],
   },
 ];
@@ -216,11 +260,13 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
             <Link
               key={item.label}
               href={item.href}
-              className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-green-50 group-hover:w-64 ${
+              className={`group/link flex items-center gap-4 px-4 py-3 rounded-lg duration-700 text-gray-700 hover:bg-green-50 group-hover:w-64 transition-all ${
                 pathname === item.href ? "bg-green-50" : ""
               }`}
             >
-              <span>{item.icon}</span>
+              <span className="group-hover/link:translate-x-2 transition-all">
+                {item.icon}
+              </span>
               <span className="text-base font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                 {item.label}
               </span>
@@ -236,8 +282,10 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
               className="w-full"
             >
               <CollapsibleTrigger asChild>
-                <button className="flex items-center gap-4 px-4 py-3 w-full rounded-lg transition-colors duration-200 text-gray-700 hover:bg-green-50 focus:outline-none">
-                  <span>{dropdown.icon}</span>
+                <button className="flex items-center gap-4 px-4 py-3 w-full rounded-lg transition-colors duration-700 text-gray-700 hover:bg-green-50 focus:outline-none">
+                  <span className="group-hover/link:translate-x-2 transition-all">
+                    {dropdown.icon}
+                  </span>
                   <span className="ml-2 text-base font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                     {dropdown.label}
                   </span>
@@ -262,19 +310,15 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
                     <Link
                       key={child.label}
                       href={child.href}
-                      className={`flex items-center gap-2 px-2 py-2 text-gray-700 hover:bg-green-50 rounded-lg text-sm ${
+                      className={`group/link flex items-center gap-4 px-2 py-2 text-gray-700 hover:bg-green-50 rounded-lg text-sm ${
                         pathname === child.href
                           ? "bg-green-500 text-white hover:bg-green-600"
                           : ""
                       }`}
                     >
-                      <svg
-                        className="w-2 h-2 text-gray-400"
-                        fill="currentColor"
-                        viewBox="0 0 8 8"
-                      >
-                        <circle cx="4" cy="4" r="4" />
-                      </svg>
+                      <span className="group-hover/link:translate-x-2 transition-all">
+                        {child.icon}
+                      </span>
                       <span>{child.label}</span>
                     </Link>
                   ))}
@@ -287,7 +331,7 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
       <div className="mb-6 flex-shrink-0">
         <Link
           href={settingsItem.href}
-          className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-colors duration-200 text-gray-700 hover:bg-green-50 group-hover:w-64 ${
+          className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-colors duration-700 text-gray-700 hover:bg-green-50 group-hover:w-64 ${
             pathname === settingsItem.href
               ? "bg-green-500 text-white hover:bg-green-600"
               : ""

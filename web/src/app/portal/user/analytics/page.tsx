@@ -32,7 +32,7 @@ export default function AnalyticsPage() {
     <Tabs defaultValue="summary">
       <div className="min-h-screen bg-gray-50">
         {/* Centered Tabs Navigation */}
-        <div className="sticky top-[73px] bg-white border-b items-center border-gray-200 z-40 flex justify-center py-5">
+        <div className="sticky top-0 bg-white border-b items-center border-gray-200 z-40 flex justify-center py-5">
           <TabsList>
             <TabsTrigger value="summary">Summary</TabsTrigger>
             <TabsTrigger value="credentials">Credentials</TabsTrigger>
