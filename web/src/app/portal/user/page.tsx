@@ -89,7 +89,7 @@ export default function UserDashboard() {
         >
           Skip and create manually
         </Link>
-        <Button className="bg-gradient-to-r from-pink-400 via-purple-400 to-green-400 text-white font-semibold px-8 py-6 rounded-md text-lg shadow-md hover:opacity-90 transition">
+        <Button className="cursor-pointer bg-gradient-to-r from-pink-400 via-purple-400 to-green-400 text-white font-semibold px-8 py-6 rounded-md text-lg shadow-md transition-all">
           Send Certificates
         </Button>
       </div>
