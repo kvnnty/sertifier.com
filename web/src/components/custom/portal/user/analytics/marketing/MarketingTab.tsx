@@ -242,7 +242,7 @@ export default function MarketingTab() {
 
   return (
     <div className="min-h-screen">
-      <div className="p-4 mb-6">
+      <div className="p-4 mb-4">
         <div className="flex flex-col items-start">
           <div className="w-full flex justify-between items-center mb-4">
             <div className="max-w-[70%]">
