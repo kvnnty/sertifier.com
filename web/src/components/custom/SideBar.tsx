@@ -80,7 +80,7 @@ const menuItems = [
     label: "Verification Page",
     icon: (
       <svg
-        className="w-7 h-7"
+        className="w-8 h-8"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
