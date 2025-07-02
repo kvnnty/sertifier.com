@@ -58,7 +58,7 @@ const menuItems = [
         />
       </svg>
     ),
-    href: "/send-certificates",
+    href: "/portal/certificate",
   },
   {
     label: "Campaigns",
