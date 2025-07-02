@@ -1,0 +1,43 @@
+// mockEmailTemplates.ts
+export const mockEmailTemplateData = {
+  message: null,
+  hasError: false,
+  validationErrors: [],
+  showPurchaseSheet: false,
+  isUpgraded: false,
+  upgradePlan: null,
+  data: {
+    items: [
+      {
+        id: "08ddb352-66c1-42f2-86d9-702319b21c46",
+        createDate: "2025-06-24T19:07:44.910789",
+        title: "Email Template 1",
+        template: null,
+        insideText: null,
+        buttonColor: null,
+        customLogo: false,
+        language: null,
+        details: null,
+        isUsed: false,
+        isDefault: false,
+        components: null,
+      },
+      {
+        id: "09ddb352-66c1-42f2-86d9-702319b21c47",
+        createDate: "2025-06-24T18:07:44.910789",
+        title: "Email Template 2",
+        template: null,
+        insideText: null,
+        buttonColor: null,
+        customLogo: false,
+        language: null,
+        details: null,
+        isUsed: false,
+        isDefault: false,
+        components: null,
+      },
+    ],
+    count: 2,
+  },
+  content: null,
+};
