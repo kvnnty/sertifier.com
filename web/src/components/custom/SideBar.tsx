@@ -187,7 +187,7 @@ const dropdownItems = [
       },
       {
         label: "Ads",
-        href: "/advanced/2",
+        href: "/portal/user/advanced/ads",
         icon: <Megaphone className="w-5 h-5" />,
       },
       {

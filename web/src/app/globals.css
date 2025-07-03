@@ -158,3 +158,7 @@
     scroll-snap-align: start;
   }
 }
+
+.font-global{
+   font-family:  googleSans, Roboto, sans-serif;
+}

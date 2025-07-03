@@ -10,7 +10,7 @@ const steps = [
     status: "complete",
   },
   { name: "Details", href: "/portal/certificate/details", status: "current" },
-  { name: "Campaign Options", href: "#", status: "upcoming" },
+  { name: "Campaign Options", href: "/portal/certificate/campaign-options", status: "upcoming" },
   { name: "Recipients", href: "#", status: "upcoming" },
   { name: "Preview and Send", href: "#", status: "upcoming" },
 ];
