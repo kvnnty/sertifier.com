@@ -10,16 +10,24 @@ const steps = [
     status: "complete",
   },
   { name: "Details", href: "/portal/certificate/details", status: "current" },
-  { name: "Campaign Options", href: "/portal/certificate/campaign-options", status: "upcoming" },
+  {
+    name: "Campaign Options",
+    href: "/portal/certificate/campaign-options",
+    status: "upcoming",
+  },
   { name: "Recipients", href: "#", status: "upcoming" },
   { name: "Preview and Send", href: "#", status: "upcoming" },
 ];
 
 const TopBar = () => {
   return (
-    <header className="flex h-20 items-center justify-between border-b bg-white px-12 sticky top-0">
+    <header className="flex h-20 items-center justify-between border-b bg-white px-12 sticky top-0 z-50">
       <Link href="/portal/user/compaigns">
-        <Button variant="ghost" className="hover:rounded-full duration-300 cursor-pointer" size="icon">
+        <Button
+          variant="ghost"
+          className="hover:rounded-full duration-300 cursor-pointer"
+          size="icon"
+        >
           <X className="h-6 w-6" />
         </Button>
       </Link>
@@ -27,12 +35,14 @@ const TopBar = () => {
         {steps.map((step, index) => (
           <div key={step.name} className="flex items-center">
             <Link href={step.href} className="flex items-center">
-            <Loader className={cn("h-5 w-5", {
+              <Loader
+                className={cn("h-5 w-5", {
                   "text-teal-500":
                     step.status === "complete" || step.status === "current",
                   "text-gray-400": step.status === "upcoming",
-                })}/>
-             
+                })}
+              />
+
               <span
                 className={cn("ml-2 text-sm font-medium", {
                   "text-gray-900":
