@@ -32,7 +32,7 @@ export default function LoginPage() {
             <div className="grid w-full gap-2">
               <Label htmlFor="email">Email address</Label>
               <Input
-              required
+                required
                 id="email"
                 type="email"
                 placeholder="Enter your work email address"
@@ -62,7 +62,10 @@ export default function LoginPage() {
         </Button>
         <div className="mt-6 text-center text-gray-700">
           Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="text-green-900 font-medium hover:underline">
+          <Link
+            href="/auth/signup"
+            className="text-green-900 font-medium hover:underline"
+          >
             Sign up
           </Link>
         </div>

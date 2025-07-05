@@ -80,7 +80,7 @@ const menuItems = [
     label: "Verification Page",
     icon: (
       <svg
-        className="w-7 h-7"
+        className="w-8 h-8"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
@@ -106,7 +106,7 @@ const menuItems = [
         <path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
       </svg>
     ),
-    href: "/recipients",
+    href: "/portal/user/recipients",
   },
   {
     label: "Analytics",
@@ -187,12 +187,12 @@ const dropdownItems = [
       },
       {
         label: "Ads",
-        href: "/advanced/2",
+        href: "/portal/user/advanced/ads",
         icon: <Megaphone className="w-5 h-5" />,
       },
       {
         label: "Customer Portal",
-        href: "/advanced/2",
+        href: "/portal/user/customer-portal",
         icon: <LayoutPanelTop className="w-5 h-5" />,
       },
     ],

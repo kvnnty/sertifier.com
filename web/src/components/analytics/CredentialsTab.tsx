@@ -16,9 +16,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox"; // Updated Checkbox component
+import { Checkbox } from "@/components/ui/checkbox";
 
-// Mock credential data with timestamps
 const mockCredentials = [
   {
     fullName: "Alice Johnson",

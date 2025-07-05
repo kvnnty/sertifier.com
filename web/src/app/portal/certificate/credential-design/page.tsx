@@ -69,7 +69,7 @@ export default function CredentialDesign() {
               // onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button className="rounded-md bg-teal-700 px-8 hover:bg-teal-800">Continue</Button>
+          <Button className="rounded-md bg-teal-700 px-8">Continue</Button>
         </div>
       </div>
       <div className="px-12 py-8">

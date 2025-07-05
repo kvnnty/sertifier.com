@@ -14,7 +14,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
   averagePercentage,
 }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm flex flex-col">
+    <div className="bg-white p-5 rounded-lg shadow-sm flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-sm font-medium text-gray-700 uppercase tracking-wider">
           {title}

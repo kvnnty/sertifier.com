@@ -12,7 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 
 export default function TopBar() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -43,11 +43,9 @@ export default function TopBar() {
 
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-          <AvatarFallback className="text-xl bg-gray-100 me-2">
-            M
-          </AvatarFallback>
+          <AvatarFallback className="text-xl bg-gray-100 me-2">M</AvatarFallback>
         </Avatar>
-
+ 
         {/* Organization Name and Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -61,16 +59,20 @@ export default function TopBar() {
           <DropdownMenuContent className="w-64">
             <DropdownMenuLabel>
               <div className="px-2">
-                <p className="text-sm font-medium text-gray-900">
-                  My Organization
-                </p>
+                <p className="text-sm font-medium text-gray-900">My Organization</p>
                 <p className="text-xs text-gray-500">admin@myorg.com</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Organization Settings</DropdownMenuItem>
-            <DropdownMenuItem>Billing & Plans</DropdownMenuItem>
-            <DropdownMenuItem>Team Members</DropdownMenuItem>
+            <DropdownMenuItem>
+              Organization Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              Billing & Plans
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              Team Members
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600">
               Sign Out

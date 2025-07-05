@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import Section from "./Section";
 import { Funnel } from "lucide-react";
-import AdPerformanceTable from "./AdPerformanceTable";
-import MarketingPagination from "./MarketingPagination";
+import DateFilter from "../DatePicker";
+import DynamicTable, {
+  ColumnConfig,
+  SummaryConfig,
+} from "../../../../DynamicTable";
+import CustomPagination from "../../Pagination";
 
 interface AnalyticsData {
   date: string;
@@ -24,6 +28,28 @@ interface SectionProps {
   data: AnalyticsData[];
 }
 
+interface AdPerformance {
+  adName: string;
+  views: number;
+  clicks: number;
+  viewedBy: number;
+  status: string;
+  averageSaving: number;
+  lastActivity: string;
+}
+
+const mapAnalyticsToAdPerformance = (data: AnalyticsData[]): AdPerformance[] =>
+  data.map((item) => ({
+    adName: `Ad_${item.date.replace(/\./g, "_")}`,
+    views: item.viewers,
+    clicks: Math.floor(item.viewers * 0.05),
+    viewedBy: item.viewers,
+    status: item.viewers > 0 ? "Active" : "Inactive",
+    averageSaving:
+      item.viewers > 0 ? Math.round(item.viewers * 0.1 * 10) / 10 : 0,
+    lastActivity: item.lastActivity,
+  }));
+
 const initialData: AnalyticsData[] = [
   { date: "12.06.2025", viewers: 0, lastActivity: "2025-06-12T10:00:00Z" },
   { date: "13.06.2025", viewers: 100, lastActivity: "2025-06-13T14:30:00Z" },
@@ -34,77 +60,12 @@ const initialData: AnalyticsData[] = [
 ];
 
 export default function MarketingTab() {
-  const [activeTimeFilter, setActiveTimeFilter] = useState("all");
-  const [sharedData, setSharedData] = useState(initialData);
-  const [showCustomDateRange, setShowCustomDateRange] = useState(false);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [sharedData, setSharedData] = useState<AnalyticsData[]>(initialData);
+  const [adPerformanceData, setAdPerformanceData] = useState<AdPerformance[]>(
+    mapAnalyticsToAdPerformance(initialData)
+  );
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Match the design's 10/page
-
-  const timeFilters = [
-    { id: "all", label: "All Time" },
-    { id: "today", label: "Today" },
-    { id: "7days", label: "7 Days" },
-    { id: "30days", label: "30 Days" },
-    { id: "lastMonth", label: "Last Month" },
-    { id: "3m", label: "3M" },
-    { id: "12m", label: "12M" },
-    { id: "custom", label: "Custom" },
-  ];
-
-  const currentDate = new Date();
-  currentDate.setHours(20, 36, 0, 0); // Set to 08:36 PM CAT, June 19, 2025
-
-  const filterData = () => {
-    let filtered = [...initialData];
-
-    filtered = filtered.filter((item) => {
-      const itemDate = new Date(item.lastActivity);
-      const diffDays = Math.floor(
-        (currentDate.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      switch (activeTimeFilter) {
-        case "today":
-          return diffDays === 0;
-        case "7days":
-          return diffDays <= 7;
-        case "30days":
-          return diffDays <= 30;
-        case "lastMonth":
-          const lastMonth = new Date(currentDate);
-          lastMonth.setMonth(lastMonth.getMonth() - 1);
-          return itemDate >= lastMonth && itemDate <= currentDate;
-        case "3m":
-          const threeMonthsAgo = new Date(currentDate);
-          threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-          return itemDate >= threeMonthsAgo;
-        case "12m":
-          const twelveMonthsAgo = new Date(currentDate);
-          twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
-          return itemDate >= twelveMonthsAgo;
-        case "custom":
-          if (startDate && endDate) {
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999);
-            return itemDate >= start && itemDate <= end;
-          }
-          return true;
-        case "all":
-        default:
-          return true;
-      }
-    });
-
-    return filtered;
-  };
-
-  useEffect(() => {
-    const newFilteredData = filterData();
-    setSharedData(newFilteredData);
-  }, [activeTimeFilter, startDate, endDate]);
+  const itemsPerPage = 5;
 
   const sections: SectionProps[] = [
     {
@@ -229,9 +190,59 @@ export default function MarketingTab() {
     },
   ];
 
+  useEffect(() => {
+    setAdPerformanceData(mapAnalyticsToAdPerformance(sharedData));
+  }, [sharedData]);
+
+  const columns: ColumnConfig<AdPerformance>[] = [
+    { key: "adName", label: "AD NAME", sortable: true },
+    { key: "views", label: "VIEWS", sortable: true },
+    { key: "clicks", label: "CLICKS", sortable: true },
+    { key: "viewedBy", label: "VIEWED BY", sortable: true },
+    { key: "status", label: "STATUS", sortable: true },
+    {
+      key: "averageSaving",
+      label: "AVERAGE SAVING",
+      sortable: true,
+      format: (v) => `$${v.toFixed(2)}`,
+    },
+    {
+      key: "lastActivity",
+      label: "LAST ACTIVITY",
+      sortable: true,
+      format: (v) => new Date(v).toLocaleDateString(),
+    },
+  ];
+
+  const summaryColumns: SummaryConfig<AdPerformance>[] = [
+    {
+      key: "views",
+      label: "VIEWS",
+      reduce: (data) => data.reduce((sum, ad) => sum + ad.views, 0),
+    },
+    {
+      key: "clicks",
+      label: "CLICKS",
+      reduce: (data) => data.reduce((sum, ad) => sum + ad.clicks, 0),
+    },
+    {
+      key: "viewedBy",
+      label: "VIEWED BY",
+      reduce: (data) => data.reduce((sum, ad) => sum + ad.viewedBy, 0),
+    },
+    {
+      key: "averageSaving",
+      label: "AVERAGE SAVING",
+      reduce: (data) =>
+        data.reduce((sum, ad) => sum + ad.averageSaving, 0) /
+        (data.length || 1),
+      format: (v) => `$${v.toFixed(2)}`,
+    },
+  ];
+
   return (
     <div className="min-h-screen">
-      <div className="p-4 mb-6">
+      <div className="p-4 mb-4">
         <div className="flex flex-col items-start">
           <div className="w-full flex justify-between items-center mb-4">
             <div className="max-w-[70%]">
@@ -246,41 +257,11 @@ export default function MarketingTab() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-2 sm:mt-0">
-            {timeFilters.map((filter) => (
-              <button
-                key={filter.id}
-                onClick={() => {
-                  setActiveTimeFilter(filter.id);
-                  if (filter.id === "custom") setShowCustomDateRange(true);
-                  else setShowCustomDateRange(false);
-                }}
-                className={`px-3 py-1 rounded text-sm border text-black ${
-                  activeTimeFilter === filter.id
-                    ? "bg-[#cccccc]"
-                    : "text-gray-700"
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-            {showCustomDateRange && (
-              <div className="flex items-center gap-2 mt-2 sm:mt-0">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full sm:w-[150px] p-1 border rounded"
-                />
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full sm:w-[150px] p-1 border rounded"
-                />
-              </div>
-            )}
-          </div>
+          <DateFilter
+            data={initialData}
+            getDateField={(item) => item.lastActivity}
+            onFilterChange={setSharedData}
+          />
         </div>
       </div>
       <div className="gap-y-5">
@@ -295,12 +276,19 @@ export default function MarketingTab() {
               data={section.data}
             />
           ))}
-          <AdPerformanceTable />
-          <MarketingPagination
+          <DynamicTable
+            data={adPerformanceData}
+            columns={columns}
+            summaryColumns={summaryColumns}
+            parentComponent="MarketingTab"
             currentPage={currentPage}
-            totalPages={Math.ceil(sharedData.length / itemsPerPage)}
+            itemsPerPage={itemsPerPage}
+          />
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(adPerformanceData.length / itemsPerPage)}
             onPageChange={setCurrentPage}
-            totalItems={sharedData.length}
+            totalItems={adPerformanceData.length}
             itemsPerPage={itemsPerPage}
           />
         </div>
