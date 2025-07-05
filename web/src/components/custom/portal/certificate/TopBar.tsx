@@ -15,7 +15,7 @@ const steps = [
     href: "/portal/certificate/campaign-options",
     status: "upcoming",
   },
-  { name: "Recipients", href: "#", status: "upcoming" },
+  { name: "Recipients", href: "/portal/user/recipients", status: "upcoming" },
   { name: "Preview and Send", href: "#", status: "upcoming" },
 ];
 

@@ -72,13 +72,13 @@ export default function CredentialDesign() {
           <Button className="rounded-md bg-teal-700 px-8">Continue</Button>
         </div>
       </div>
-      <div className="px-12 py-8">
+      <div className="px-12 py-6">
         <div className="flex items-center gap-4">
           {selectItems.map((item, index) => (
             <SelectBox key={index} SelectItemName={item.name} />
           ))}
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,_minmax(260px,_1fr))] gap-10 py-16">
+        <div className="grid grid-cols-[repeat(auto-fit,_minmax(260px,_1fr))] gap-10 py-10">
           {currentItems.map((item, index) => (
             <div key={index}>
               <CredentialDesignCard
