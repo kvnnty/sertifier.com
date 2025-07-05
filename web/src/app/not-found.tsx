@@ -14,7 +14,7 @@ export default function NotFound() {
           moved.
         </p>
         <Link
-          href="/"
+          href="/portal/user"
           className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-900 hover:bg-green-800 transition-colors duration-200"
         >
           Go back home

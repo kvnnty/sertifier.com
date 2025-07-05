@@ -312,7 +312,7 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
                       href={child.href}
                       className={`group/link flex items-center gap-4 px-2 py-2 text-gray-700 hover:bg-green-50 rounded-lg text-sm ${
                         pathname === child.href
-                          ? "bg-green-500 text-white hover:bg-green-600"
+                          ? "bg-green-50 text-white hover:bg-green-50"
                           : ""
                       }`}
                     >
