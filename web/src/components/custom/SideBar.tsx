@@ -9,12 +9,7 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import {
-  PenTool,
-  FileText,
-  Package,
-  Plug,
   Megaphone,
-  UserSquare,
   Palette,
   BookOpen,
   Mail,
@@ -177,17 +172,17 @@ const dropdownItems = [
     children: [
       {
         label: "Collections",
-        href: "/advanced/1",
+        href: "/portal/user/collections",
         icon: <ScanQrCode className="w-5 h-5" />,
       },
       {
         label: "Integrations",
-        href: "/advanced/2",
+        href: "/portal/user/integrations",
         icon: <Network className="w-5 h-5" />,
       },
       {
         label: "Ads",
-        href: "/portal/user/advanced/ads",
+        href: "/portal/user/ads",
         icon: <Megaphone className="w-5 h-5" />,
       },
       {
@@ -312,7 +307,7 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
                       href={child.href}
                       className={`group/link flex items-center gap-4 px-2 py-2 text-gray-700 hover:bg-green-50 rounded-lg text-sm ${
                         pathname === child.href
-                          ? "bg-green-50 text-white hover:bg-green-50"
+                          ? "bg-green-50 text-gray-700 hover:bg-green-50"
                           : ""
                       }`}
                     >

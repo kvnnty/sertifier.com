@@ -45,7 +45,7 @@ export default function CredentialDesign() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-white flex justify-between items-center h-20 border-b px-12 sticky top-20 z-50">
+      <div className="bg-white flex justify-between items-center h-20 border-b px-12 sticky top-0 z-50">
         <h1 className="text-gray-900 font-bold text-2xl">Credential Design</h1>
         <div className="flex gap-4 items-center">
           <Button
@@ -78,7 +78,7 @@ export default function CredentialDesign() {
             <SelectBox key={index} SelectItemName={item.name} />
           ))}
         </div>
-        <div className="grid grid-cols-4 gap-10 py-16">
+        <div className="grid grid-cols-[repeat(auto-fit,_minmax(260px,_1fr))] gap-10 py-16">
           {currentItems.map((item, index) => (
             <div key={index}>
               <CredentialDesignCard

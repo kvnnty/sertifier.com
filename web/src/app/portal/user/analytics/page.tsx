@@ -1,3 +1,5 @@
+"use client"
+
 import AnalyticsClient from "@/components/custom/portal/user/analytics/AnalyticsClient";
 import { Suspense } from "react";
 
