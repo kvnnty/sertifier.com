@@ -4,6 +4,7 @@ import RichTextEditor from "@/components/custom/RichTextEditor";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { useState } from "react";
+import { FaTrashAlt } from "react-icons/fa";
 
 interface EarningCriteriaComponentProps {
   onRemove: () => void;
@@ -33,7 +34,7 @@ export const EarningCriteriaComponent = ({
         onClick={onRemove}
         className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
       >
-        <X size={16} />
+        <FaTrashAlt className="text-gray-500 hover:text-gray-700 cursor-pointer" />
       </button>
     </div>
   );

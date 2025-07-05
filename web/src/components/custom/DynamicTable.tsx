@@ -15,7 +15,7 @@ export interface ColumnConfig<T> {
   format?: (value: any) => string | number;
   sortable?: boolean;
   render?: (item: T) => React.ReactNode;
-  isSelection?: boolean; // Marks the selection column
+  isSelection?: boolean;
 }
 
 export interface SummaryConfig<T> {

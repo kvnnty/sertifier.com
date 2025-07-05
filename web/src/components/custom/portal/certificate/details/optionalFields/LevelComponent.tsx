@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { useState } from "react";
+import { FaTrashAlt } from "react-icons/fa";
 
 interface LevelComponentProps {
   onRemove: () => void;
@@ -35,7 +36,7 @@ export const LevelComponent = ({ onRemove }: LevelComponentProps) => {
           onClick={onRemove}
           className="text-gray-500 hover:text-gray-700"
         >
-          <X size={16} />
+        <FaTrashAlt className="text-gray-500 hover:text-gray-700 cursor-pointer" />
         </button>
       </div>
 
