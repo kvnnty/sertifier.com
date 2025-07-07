@@ -6,7 +6,7 @@ import Link from "next/link";
 const steps = [
   {
     name: "Credential Designs",
-    href: "/portal/certificate/credential-design",
+    href: "/portal/certificate/credential-designs",
     status: "complete",
   },
   { name: "Details", href: "/portal/certificate/details", status: "current" },

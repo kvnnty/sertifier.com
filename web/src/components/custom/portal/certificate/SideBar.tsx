@@ -10,7 +10,7 @@ const menuItems = [
   {
     label: "Templates",
     icon: <FileBadge className="h-6 w-6" />,
-    href: "/portal/certificate/credential-design",
+    href: "/portal/certificate/credential-designs",
   },
   {
     label: "Attributes",
