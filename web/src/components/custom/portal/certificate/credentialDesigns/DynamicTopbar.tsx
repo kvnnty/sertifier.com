@@ -62,6 +62,8 @@ interface DynamicTopbarProps {
   // For disabling buttons
   canUndo?: boolean;
   canRedo?: boolean;
+  // For color picker
+  onOpenColorPicker?: (currentColor: string) => void;
 }
 
 const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
@@ -80,6 +82,8 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
   onSendDownwards,
   canUndo = false,
   canRedo = false,
+  // Color picker
+  onOpenColorPicker = () => {},
 }) => {
   const [showShapesDropdown, setShowShapesDropdown] = useState(false);
 
@@ -382,28 +386,14 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-6">
             <div className="flex items-center gap-2">
-              <div
-                className="w-8 h-8 border-2 border-gray-300 rounded-sm shadow-sm"
-                style={{
-                  backgroundColor: selectedElement.fillColor || "#000000",
-                }}
-              ></div>
               <span className="text-sm font-medium text-gray-700">Fill:</span>
-              <input
-                type="color"
-                value={selectedElement.fillColor || "#000000"}
-                onChange={(e) =>
-                  onUpdateElement(
-                    selectedElement.id,
-                    "fillColor",
-                    e.target.value
-                  )
-                }
-                className="w-10 h-8 border border-gray-300 rounded cursor-pointer"
+              <button
+                onClick={() => onOpenColorPicker(selectedElement.fillColor || "#000000")}
+                className="w-8 h-8 border border-gray-300 rounded-sm cursor-pointer"
+                style={{ backgroundColor: selectedElement.fillColor || "#000000" }}
+                aria-label="Open color picker"
               />
             </div>
-
-            <div className="h-8 w-px bg-gray-300"></div>
 
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Width:</span>
@@ -441,38 +431,27 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
               />
             </div>
 
-            <div className="h-8 w-px bg-gray-300"></div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Stroke:</span>
-              <input
-                type="color"
-                value={selectedElement.strokeColor || "#000000"}
-                onChange={(e) =>
-                  onUpdateElement(
-                    selectedElement.id,
-                    "strokeColor",
-                    e.target.value
-                  )
-                }
-                className="w-10 h-8 border border-gray-300 rounded cursor-pointer"
-              />
-              <input
-                type="number"
-                value={selectedElement.strokeWidth || 2}
-                onChange={(e) =>
-                  onUpdateElement(
-                    selectedElement.id,
-                    "strokeWidth",
-                    parseInt(e.target.value)
-                  )
-                }
-                className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                min="0"
-                max="20"
-                placeholder="Width"
-              />
-            </div>
+            {selectedElement.type === "rectangle" && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-700">
+                  Border Radius:
+                </span>
+                <input
+                  type="number"
+                  value={selectedElement.borderRadius || 0}
+                  onChange={(e) =>
+                    onUpdateElement(
+                      selectedElement.id,
+                      "borderRadius",
+                      parseInt(e.target.value)
+                    )
+                  }
+                  className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  min="0"
+                  max="100"
+                />
+              </div>
+            )}
           </div>
 
           {/* Action buttons */}

@@ -33,7 +33,7 @@ export const useCanvasInteraction = (
   // For undo/redo functionality
   const [history, setHistory] = useState<Certificate[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  
+
   // Use this ref to prevent infinite update cycles
   const certificateRef = useRef(selectedCertificate);
   const skipHistoryUpdate = useRef(false);
@@ -96,19 +96,25 @@ export const useCanvasInteraction = (
     }
 
     // Check if the certificate has actually changed by comparing with the reference
-    const hasChanged = JSON.stringify(selectedCertificate) !== JSON.stringify(certificateRef.current);
-    
+    const hasChanged =
+      JSON.stringify(selectedCertificate) !==
+      JSON.stringify(certificateRef.current);
+
     // Only update history if there are actual changes
     if (hasChanged && selectedCertificate && selectedCertificate.elements) {
       // Update the reference
       certificateRef.current = JSON.parse(JSON.stringify(selectedCertificate));
-      
+
       // Add current state to history, removing any future states
-      const newHistory = [...history.slice(0, historyIndex + 1), JSON.parse(JSON.stringify(selectedCertificate))];
-      
+      const newHistory = [
+        ...history.slice(0, historyIndex + 1),
+        JSON.parse(JSON.stringify(selectedCertificate)),
+      ];
+
       // Limit history size to prevent memory issues
-      const limitedHistory = newHistory.length > 30 ? newHistory.slice(-30) : newHistory;
-      
+      const limitedHistory =
+        newHistory.length > 30 ? newHistory.slice(-30) : newHistory;
+
       setHistory(limitedHistory);
       setHistoryIndex(limitedHistory.length - 1);
     }
@@ -350,7 +356,7 @@ export const useCanvasInteraction = (
   // New functions for the requested functionalities
   const duplicateElement = useCallback(() => {
     if (!selectedElement) return;
-    
+
     const duplicatedElement: CertificateElement = {
       ...JSON.parse(JSON.stringify(selectedElement)),
       id: Date.now(),
@@ -371,7 +377,12 @@ export const useCanvasInteraction = (
     setSelectedCertificate(updatedCertificate);
     // Select the newly created element
     setSelectedElement(duplicatedElement);
-  }, [selectedElement, selectedCertificate, setSelectedCertificate, setSelectedElement]);
+  }, [
+    selectedElement,
+    selectedCertificate,
+    setSelectedCertificate,
+    setSelectedElement,
+  ]);
 
   const deleteElement = useCallback(() => {
     if (!selectedElement) return;
@@ -389,7 +400,12 @@ export const useCanvasInteraction = (
     setSelectedCertificate(updatedCertificate);
     // Clear the selected element
     setSelectedElement(null);
-  }, [selectedElement, selectedCertificate, setSelectedCertificate, setSelectedElement]);
+  }, [
+    selectedElement,
+    selectedCertificate,
+    setSelectedCertificate,
+    setSelectedElement,
+  ]);
 
   const undo = useCallback(() => {
     if (historyIndex > 0) {
@@ -413,28 +429,34 @@ export const useCanvasInteraction = (
       // Clear selection when redoing
       setSelectedElement(null);
     }
-  }, [historyIndex, history.length, history, setSelectedCertificate, setSelectedElement]);
+  }, [
+    historyIndex,
+    history.length,
+    history,
+    setSelectedCertificate,
+    setSelectedElement,
+  ]);
 
   const sendUpwards = useCallback(() => {
     if (!selectedElement) return;
-    
+
     // Find the index of the selected element
     const currentIndex = selectedCertificate.elements.findIndex(
       (element) => element.id === selectedElement.id
     );
-    
+
     // If it's already at the top, don't do anything
     if (currentIndex === selectedCertificate.elements.length - 1) return;
-    
+
     // Create a copy of the elements array
     const updatedElements = [...selectedCertificate.elements];
-    
+
     // Swap the selected element with the one above it
     [updatedElements[currentIndex], updatedElements[currentIndex + 1]] = [
       updatedElements[currentIndex + 1],
       updatedElements[currentIndex],
     ];
-    
+
     // Update the certificate with the new element order
     setSelectedCertificate({
       ...selectedCertificate,
@@ -444,24 +466,24 @@ export const useCanvasInteraction = (
 
   const sendDownwards = useCallback(() => {
     if (!selectedElement) return;
-    
+
     // Find the index of the selected element
     const currentIndex = selectedCertificate.elements.findIndex(
       (element) => element.id === selectedElement.id
     );
-    
+
     // If it's already at the bottom, don't do anything
     if (currentIndex === 0) return;
-    
+
     // Create a copy of the elements array
     const updatedElements = [...selectedCertificate.elements];
-    
+
     // Swap the selected element with the one below it
     [updatedElements[currentIndex], updatedElements[currentIndex - 1]] = [
       updatedElements[currentIndex - 1],
       updatedElements[currentIndex],
     ];
-    
+
     // Update the certificate with the new element order
     setSelectedCertificate({
       ...selectedCertificate,

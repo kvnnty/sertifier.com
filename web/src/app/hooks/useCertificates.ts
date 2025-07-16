@@ -1,5 +1,14 @@
-import { Certificate, CertificateElement, MOCK_CERTIFICATES } from "@/lib/mock/mockCertificates";
+import {
+  Certificate,
+  CertificateElement,
+  MOCK_CERTIFICATES,
+} from "@/lib/mock/mockCertificates";
 import { useState } from "react";
+import {
+  CertificateSize,
+  CERTIFICATE_SIZES,
+  UploadedImage,
+} from "@/components/custom/portal/certificate/credentialDesigns/sidebar";
 
 export const useCertificateState = () => {
   const [certificates] = useState<Certificate[]>(MOCK_CERTIFICATES);
@@ -10,21 +19,81 @@ export const useCertificateState = () => {
     useState<CertificateElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editingText, setEditingText] = useState("");
-  const [activeSidebarFeature, setActiveSidebarFeature] = useState<"templates" | "elements" | "settings">("templates");
+  const [activeSidebarFeature, setActiveSidebarFeature] = useState<
+    "templates" | "elements" | "settings" | "colorPicker"
+  >("templates");
+  const [certificateSize, setCertificateSize] =
+    useState<CertificateSize>("A4 Landscape");
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
 
   const createBlankCertificate = () => {
+    const sizeConfig = CERTIFICATE_SIZES[certificateSize];
+
     const blankCertificate: Certificate = {
       id: Date.now(),
       name: "Blank Certificate",
       category: "custom",
-      width: 800,
-      height: 600,
+      width: sizeConfig.width,
+      height: sizeConfig.height,
       backgroundColor: "#ffffff",
       elements: [],
     };
 
     setSelectedCertificate(blankCertificate);
     setSelectedElement(null);
+  };
+
+  const handleCertificateSizeChange = (newSize: CertificateSize) => {
+    setCertificateSize(newSize);
+
+    // Update the selected certificate dimensions
+    const sizeConfig = CERTIFICATE_SIZES[newSize];
+
+    setSelectedCertificate((prev) => ({
+      ...prev,
+      width: sizeConfig.width,
+      height: sizeConfig.height,
+    }));
+  };
+
+  const handleImageUpload = (file: File) => {
+    // Create a URL for the uploaded image
+    const imageUrl = URL.createObjectURL(file);
+
+    // Add the image to the uploaded images list
+    const newImage: UploadedImage = {
+      id: `upload-${Date.now()}`,
+      url: imageUrl,
+      name: file.name,
+      timestamp: Date.now(),
+    };
+
+    setUploadedImages((prev) => [newImage, ...prev]);
+
+    // Create a new certificate with this image as background
+    createCertificateFromUploadedImage(newImage);
+  };
+
+  const createCertificateFromUploadedImage = (image: UploadedImage) => {
+    const sizeConfig = CERTIFICATE_SIZES[certificateSize];
+
+    const newCertificate: Certificate = {
+      id: Date.now(),
+      name: `Certificate from ${image.name}`,
+      category: "custom",
+      width: sizeConfig.width,
+      height: sizeConfig.height,
+      backgroundColor: "#ffffff",
+      backgroundImage: image.url,
+      elements: [],
+    };
+
+    setSelectedCertificate(newCertificate);
+    setSelectedElement(null);
+  };
+
+  const selectUploadedImage = (image: UploadedImage) => {
+    createCertificateFromUploadedImage(image);
   };
 
   const addTextElement = () => {
@@ -108,9 +177,32 @@ export const useCertificateState = () => {
   };
 
   const startInlineEditing = (element: CertificateElement) => {
+    if (element.type !== "text") return;
+
     setSelectedElement(element);
     setIsEditing(true);
     setEditingText(element.content);
+
+    // Focus will be handled by the autoFocus attribute on the input
+  };
+
+  const deleteImage = (imageId: string) => {
+    // Remove the image from the uploaded images list
+    setUploadedImages((prev) => prev.filter((img) => img.id !== imageId));
+
+    // If the current certificate is using this image as background, keep the certificate but remove the background
+    if (selectedCertificate?.backgroundImage) {
+      const deletedImage = uploadedImages.find((img) => img.id === imageId);
+      if (
+        deletedImage &&
+        selectedCertificate.backgroundImage === deletedImage.url
+      ) {
+        setSelectedCertificate((prev) => ({
+          ...prev,
+          backgroundImage: undefined,
+        }));
+      }
+    }
   };
 
   return {
@@ -132,5 +224,11 @@ export const useCertificateState = () => {
     finishEditing,
     handleEditingKeyDown,
     startInlineEditing,
+    certificateSize,
+    handleCertificateSizeChange,
+    uploadedImages,
+    handleImageUpload,
+    selectUploadedImage,
+    deleteImage,
   };
 };

@@ -31,7 +31,19 @@ export const drawCanvas = (
   }
 
   selectedCertificate.elements.forEach((element) => {
-    if (element.type === "text" && !isEditing) {
+    // Always draw all elements, but if we're editing a text element, don't draw that specific element
+    // This allows the input field to be visible while still showing all other elements
+    if (
+      isEditing &&
+      selectedElement &&
+      element.id === selectedElement.id &&
+      element.type === "text"
+    ) {
+      // Skip drawing the text element that is being edited
+      return;
+    }
+
+    if (element.type === "text") {
       drawTextElement(ctx, element, selectedElement, hoveredElement);
     } else if (element.type === "rectangle" || element.type === "circle") {
       drawShapeElement(ctx, element, selectedElement, hoveredElement);
@@ -61,9 +73,57 @@ export const drawShapeElement = (
   ctx.lineWidth = element.strokeWidth || 2;
 
   if (element.type === "rectangle") {
-    ctx.fillRect(element.x, element.y, element.width!, element.height!);
-    if (element.strokeWidth && element.strokeWidth > 0) {
-      ctx.strokeRect(element.x, element.y, element.width!, element.height!);
+    if (element.borderRadius && element.borderRadius > 0) {
+      // Draw rectangle with rounded corners
+      const radius = Math.min(
+        element.borderRadius,
+        element.width! / 2,
+        element.height! / 2
+      );
+
+      ctx.beginPath();
+      ctx.moveTo(element.x + radius, element.y);
+      ctx.lineTo(element.x + element.width! - radius, element.y);
+      ctx.arcTo(
+        element.x + element.width!,
+        element.y,
+        element.x + element.width!,
+        element.y + radius,
+        radius
+      );
+      ctx.lineTo(
+        element.x + element.width!,
+        element.y + element.height! - radius
+      );
+      ctx.arcTo(
+        element.x + element.width!,
+        element.y + element.height!,
+        element.x + element.width! - radius,
+        element.y + element.height!,
+        radius
+      );
+      ctx.lineTo(element.x + radius, element.y + element.height!);
+      ctx.arcTo(
+        element.x,
+        element.y + element.height!,
+        element.x,
+        element.y + element.height! - radius,
+        radius
+      );
+      ctx.lineTo(element.x, element.y + radius);
+      ctx.arcTo(element.x, element.y, element.x + radius, element.y, radius);
+      ctx.closePath();
+
+      ctx.fill();
+      if (element.strokeWidth && element.strokeWidth > 0) {
+        ctx.stroke();
+      }
+    } else {
+      // Draw regular rectangle
+      ctx.fillRect(element.x, element.y, element.width!, element.height!);
+      if (element.strokeWidth && element.strokeWidth > 0) {
+        ctx.strokeRect(element.x, element.y, element.width!, element.height!);
+      }
     }
   } else if (element.type === "circle") {
     const centerX = element.x + element.width! / 2;
@@ -162,7 +222,7 @@ export const drawTextWithLetterSpacing = (
     currentX -= totalWidth;
   }
 
-  chars.forEach((char:string) => {
+  chars.forEach((char: string) => {
     ctx.fillText(char, currentX, element.y);
     currentX +=
       ctx.measureText(char).width + parseFloat(element.letterSpacing || "0");
@@ -208,14 +268,49 @@ export const drawResizeHandles = (
   ctx.fillStyle = "#3B82F6";
 
   ctx.fillRect(x - handleSize / 2, y - handleSize / 2, handleSize, handleSize);
-  ctx.fillRect(x + width - handleSize / 2, y - handleSize / 2, handleSize, handleSize);
-  ctx.fillRect(x - handleSize / 2, y + height - handleSize / 2, handleSize, handleSize);
-  ctx.fillRect(x + width - handleSize / 2, y + height - handleSize / 2, handleSize, handleSize);
+  ctx.fillRect(
+    x + width - handleSize / 2,
+    y - handleSize / 2,
+    handleSize,
+    handleSize
+  );
+  ctx.fillRect(
+    x - handleSize / 2,
+    y + height - handleSize / 2,
+    handleSize,
+    handleSize
+  );
+  ctx.fillRect(
+    x + width - handleSize / 2,
+    y + height - handleSize / 2,
+    handleSize,
+    handleSize
+  );
 
-  ctx.fillRect(x + width / 2 - handleSize / 2, y - handleSize / 2, handleSize, handleSize);
-  ctx.fillRect(x + width / 2 - handleSize / 2, y + height - handleSize / 2, handleSize, handleSize);
-  ctx.fillRect(x - handleSize / 2, y + height / 2 - handleSize / 2, handleSize, handleSize);
-  ctx.fillRect(x + width - handleSize / 2, y + height / 2 - handleSize / 2, handleSize, handleSize);
+  ctx.fillRect(
+    x + width / 2 - handleSize / 2,
+    y - handleSize / 2,
+    handleSize,
+    handleSize
+  );
+  ctx.fillRect(
+    x + width / 2 - handleSize / 2,
+    y + height - handleSize / 2,
+    handleSize,
+    handleSize
+  );
+  ctx.fillRect(
+    x - handleSize / 2,
+    y + height / 2 - handleSize / 2,
+    handleSize,
+    handleSize
+  );
+  ctx.fillRect(
+    x + width - handleSize / 2,
+    y + height / 2 - handleSize / 2,
+    handleSize,
+    handleSize
+  );
 
   const rotateHandleY = y - 25;
   ctx.fillStyle = "#10B981";
@@ -335,7 +430,12 @@ export const getCursorType = (
       { x: rectX, y: rectY, handle: "nw", cursor: "nw-resize" },
       { x: rectX + rectWidth, y: rectY, handle: "ne", cursor: "ne-resize" },
       { x: rectX, y: rectY + rectHeight, handle: "sw", cursor: "sw-resize" },
-      { x: rectX + rectWidth, y: rectY + rectHeight, handle: "se", cursor: "se-resize" },
+      {
+        x: rectX + rectWidth,
+        y: rectY + rectHeight,
+        handle: "se",
+        cursor: "se-resize",
+      },
     ];
 
     for (const corner of corners) {
@@ -343,15 +443,46 @@ export const getCursorType = (
         Math.abs(x - corner.x) < edgeThreshold &&
         Math.abs(y - corner.y) < edgeThreshold
       ) {
-        return { cursorType: corner.cursor as any, resizeHandle: corner.handle };
+        return {
+          cursorType: corner.cursor as any,
+          resizeHandle: corner.handle,
+        };
       }
     }
 
     const edges = [
-      { condition: Math.abs(y - rectY) < edgeThreshold && x > rectX && x < rectX + rectWidth, handle: "n", cursor: "n-resize" },
-      { condition: Math.abs(y - (rectY + rectHeight)) < edgeThreshold && x > rectX && x < rectX + rectWidth, handle: "s", cursor: "s-resize" },
-      { condition: Math.abs(x - rectX) < edgeThreshold && y > rectY && y < rectY + rectHeight, handle: "w", cursor: "w-resize" },
-      { condition: Math.abs(x - (rectX + rectWidth)) < edgeThreshold && y > rectY && y < rectY + rectHeight, handle: "e", cursor: "e-resize" },
+      {
+        condition:
+          Math.abs(y - rectY) < edgeThreshold &&
+          x > rectX &&
+          x < rectX + rectWidth,
+        handle: "n",
+        cursor: "n-resize",
+      },
+      {
+        condition:
+          Math.abs(y - (rectY + rectHeight)) < edgeThreshold &&
+          x > rectX &&
+          x < rectX + rectWidth,
+        handle: "s",
+        cursor: "s-resize",
+      },
+      {
+        condition:
+          Math.abs(x - rectX) < edgeThreshold &&
+          y > rectY &&
+          y < rectY + rectHeight,
+        handle: "w",
+        cursor: "w-resize",
+      },
+      {
+        condition:
+          Math.abs(x - (rectX + rectWidth)) < edgeThreshold &&
+          y > rectY &&
+          y < rectY + rectHeight,
+        handle: "e",
+        cursor: "e-resize",
+      },
     ];
 
     for (const edge of edges) {
@@ -369,7 +500,9 @@ export const getCursorType = (
   const ctx = canvas.getContext("2d");
   if (!ctx) return { cursorType: "default" as const, resizeHandle: null };
 
-  ctx.font = `${element.fontWeight || "normal"} ${element.fontSize}px ${element.fontFamily}`;
+  ctx.font = `${element.fontWeight || "normal"} ${element.fontSize}px ${
+    element.fontFamily
+  }`;
   const metrics = ctx.measureText(element.content);
   const textWidth = metrics.width;
   const textHeight = element.fontSize!;
@@ -397,7 +530,12 @@ export const getCursorType = (
     { x: rectX, y: rectY, handle: "nw", cursor: "nw-resize" },
     { x: rectX + rectWidth, y: rectY, handle: "ne", cursor: "ne-resize" },
     { x: rectX, y: rectY + rectHeight, handle: "sw", cursor: "sw-resize" },
-    { x: rectX + rectWidth, y: rectY + rectHeight, handle: "se", cursor: "se-resize" },
+    {
+      x: rectX + rectWidth,
+      y: rectY + rectHeight,
+      handle: "se",
+      cursor: "se-resize",
+    },
   ];
 
   for (const corner of corners) {
