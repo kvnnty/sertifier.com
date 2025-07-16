@@ -13,8 +13,37 @@ import {
   Square,
   Circle,
   Trash,
+  Copy,
+  Undo,
+  Redo,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { CertificateElement } from "@/lib/mock/mockCertificates";
+import {
+  Tooltip as TooltipRoot,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+
+// Custom Tooltip wrapper component
+const Tooltip = ({
+  children,
+  content,
+}: {
+  children: React.ReactNode;
+  content: string;
+}) => {
+  return (
+    <TooltipProvider>
+      <TooltipRoot>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipContent>{content}</TooltipContent>
+      </TooltipRoot>
+    </TooltipProvider>
+  );
+};
 
 interface DynamicTopbarProps {
   selectedElement: CertificateElement | null;
@@ -23,6 +52,16 @@ interface DynamicTopbarProps {
   onAddShape: (shapeType: "rectangle" | "circle") => void;
   onImportImage: () => void;
   onDownload: () => void;
+  // New prop functions
+  onDuplicate?: () => void;
+  onDelete?: () => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  onSendUpwards?: () => void;
+  onSendDownwards?: () => void;
+  // For disabling buttons
+  canUndo?: boolean;
+  canRedo?: boolean;
 }
 
 const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
@@ -32,6 +71,15 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
   onAddShape,
   onImportImage,
   onDownload,
+  // New props
+  onDuplicate,
+  onDelete,
+  onUndo,
+  onRedo,
+  onSendUpwards,
+  onSendDownwards,
+  canUndo = false,
+  canRedo = false,
 }) => {
   const [showShapesDropdown, setShowShapesDropdown] = useState(false);
 
@@ -39,6 +87,105 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
     onAddShape(shapeType);
     setShowShapesDropdown(false);
   };
+
+  // Action buttons to show on the right side
+  const renderActionButtons = () => (
+    <div className="flex items-center space-x-2">
+      <Tooltip content="Duplicate (Cmd + D / Ctrl + D)">
+        <button
+          onClick={onDuplicate}
+          disabled={!selectedElement}
+          className={`p-2 rounded-md ${
+            selectedElement
+              ? "text-gray-700 hover:bg-gray-100"
+              : "text-gray-400 cursor-not-allowed"
+          }`}
+          aria-label="Duplicate"
+        >
+          <Copy size={18} />
+        </button>
+      </Tooltip>
+
+      <Tooltip content="Delete (Del, Backspace)">
+        <button
+          onClick={onDelete}
+          disabled={!selectedElement}
+          className={`p-2 rounded-md ${
+            selectedElement
+              ? "text-gray-700 hover:bg-gray-100"
+              : "text-gray-400 cursor-not-allowed"
+          }`}
+          aria-label="Delete"
+        >
+          <Trash size={18} />
+        </button>
+      </Tooltip>
+
+      <div className="h-6 w-px bg-gray-300 mx-1"></div>
+
+      <Tooltip content="Undo (Ctrl + Z / Cmd + Z)">
+        <button
+          onClick={onUndo}
+          disabled={!canUndo}
+          className={`p-2 rounded-md ${
+            canUndo
+              ? "text-gray-700 hover:bg-gray-100"
+              : "text-gray-400 cursor-not-allowed"
+          }`}
+          aria-label="Undo"
+        >
+          <Undo size={18} />
+        </button>
+      </Tooltip>
+
+      <Tooltip content="Redo (Ctrl + Y / Cmd + Y)">
+        <button
+          onClick={onRedo}
+          disabled={!canRedo}
+          className={`p-2 rounded-md ${
+            canRedo
+              ? "text-gray-700 hover:bg-gray-100"
+              : "text-gray-400 cursor-not-allowed"
+          }`}
+          aria-label="Redo"
+        >
+          <Redo size={18} />
+        </button>
+      </Tooltip>
+
+      <div className="h-6 w-px bg-gray-300 mx-1"></div>
+
+      <Tooltip content="Move Layer Up">
+        <button
+          onClick={onSendUpwards}
+          disabled={!selectedElement}
+          className={`p-2 rounded-md ${
+            selectedElement
+              ? "text-gray-700 hover:bg-gray-100"
+              : "text-gray-400 cursor-not-allowed"
+          }`}
+          aria-label="Send Upwards"
+        >
+          <ArrowUp size={18} />
+        </button>
+      </Tooltip>
+
+      <Tooltip content="Move Layer Down">
+        <button
+          onClick={onSendDownwards}
+          disabled={!selectedElement}
+          className={`p-2 rounded-md ${
+            selectedElement
+              ? "text-gray-700 hover:bg-gray-100"
+              : "text-gray-400 cursor-not-allowed"
+          }`}
+          aria-label="Send Downwards"
+        >
+          <ArrowDown size={18} />
+        </button>
+      </Tooltip>
+    </div>
+  );
 
   if (!selectedElement) {
     return (
@@ -90,14 +237,8 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
             </div>
           </div>
 
-          {/* <button
-            onClick={onDownload}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Download size={16} />
-            Downloads
-          </button> */}
-          <Trash />
+          {/* Action buttons */}
+          {renderActionButtons()}
         </div>
       </div>
     );
@@ -224,14 +365,8 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
             </div>
           </div>
 
-          {/* <button
-            onClick={onDownload}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Download size={16} />
-            Download
-          </button> */}
-          <Trash />
+          {/* Action buttons */}
+          {renderActionButtons()}
         </div>
       </div>
     );
@@ -340,14 +475,8 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
             </div>
           </div>
 
-          {/* <button
-            onClick={onDownload}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Download size={16} />
-            Downloads
-          </button> */}
-          <Trash />
+          {/* Action buttons */}
+          {renderActionButtons()}
         </div>
       </div>
     );

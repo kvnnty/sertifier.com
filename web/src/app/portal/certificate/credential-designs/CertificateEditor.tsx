@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useCallback } from "react";
 import DynamicTopbar from "../../../../components/custom/portal/certificate/credentialDesigns/DynamicTopbar";
 import SidebarPanel from "../../../../components/custom/portal/certificate/credentialDesigns/sidebar";
 import { useCertificateState } from "@/app/hooks/useCertificates";
@@ -37,13 +37,73 @@ const CertificateEditor: React.FC = () => {
     handleCanvasMouseUp,
     getCursorStyle,
     downloadCertificate,
+    // New functions
+    duplicateElement,
+    deleteElement,
+    undo,
+    redo,
+    sendUpwards,
+    sendDownwards,
+    canUndo,
+    canRedo,
   } = useCanvasInteraction(
     selectedCertificate,
     selectedElement,
     isEditing,
     setSelectedElement,
-    updateElement
+    updateElement,
+    setSelectedCertificate
   );
+
+  // Keyboard shortcut handlers
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      // Check if any input element is focused
+      const isInputFocused =
+        document.activeElement instanceof HTMLInputElement ||
+        document.activeElement instanceof HTMLTextAreaElement;
+
+      if (isInputFocused) return;
+
+      // Duplicate - Cmd/Ctrl + D
+      if ((e.metaKey || e.ctrlKey) && e.key === "d") {
+        e.preventDefault();
+        duplicateElement();
+      }
+
+      // Delete - Delete or Backspace
+      if (e.key === "Delete" || e.key === "Backspace") {
+        if (!isInputFocused) {
+          e.preventDefault();
+          deleteElement();
+        }
+      }
+
+      // Undo - Cmd/Ctrl + Z
+      if ((e.metaKey || e.ctrlKey) && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+
+      // Redo - Cmd/Ctrl + Y or Cmd/Ctrl + Shift + Z
+      if (
+        ((e.metaKey || e.ctrlKey) && e.key === "y") ||
+        ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === "z")
+      ) {
+        e.preventDefault();
+        redo();
+      }
+    },
+    [duplicateElement, deleteElement, undo, redo]
+  );
+
+  // Add keyboard event listeners
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,6 +116,15 @@ const CertificateEditor: React.FC = () => {
             onAddShape={addShapeElement}
             onImportImage={() => console.log("Import image")}
             onDownload={downloadCertificate}
+            // New props for action buttons
+            onDuplicate={duplicateElement}
+            onDelete={deleteElement}
+            onUndo={undo}
+            onRedo={redo}
+            onSendUpwards={sendUpwards}
+            onSendDownwards={sendDownwards}
+            canUndo={canUndo}
+            canRedo={canRedo}
           />
 
           <div className="flex min-h-[600px]">
@@ -85,7 +154,12 @@ const CertificateEditor: React.FC = () => {
                       const scaleY = canvas.height / rect.height;
                       const x = (e.clientX - rect.left) * scaleX;
                       const y = (e.clientY - rect.top) * scaleY;
-                      const clickedElement = findElementAtPosition(x, y, selectedCertificate, canvasRef as React.RefObject<HTMLCanvasElement>);
+                      const clickedElement = findElementAtPosition(
+                        x,
+                        y,
+                        selectedCertificate,
+                        canvasRef as React.RefObject<HTMLCanvasElement>
+                      );
                       if (clickedElement && e.detail === 2) {
                         startInlineEditing(clickedElement);
                       }
@@ -109,7 +183,10 @@ const CertificateEditor: React.FC = () => {
                       className="absolute bg-transparent border-2 border-blue-500 rounded px-2 py-1 text-center outline-none"
                       style={{
                         left: `${selectedElement.x}px`,
-                        top: `${selectedElement.y - (selectedElement.fontSize || 24) / 2}px`,
+                        top: `${
+                          selectedElement.y -
+                          (selectedElement.fontSize || 24) / 2
+                        }px`,
                         fontSize: `${selectedElement.fontSize}px`,
                         fontFamily: selectedElement.fontFamily,
                         color: selectedElement.color,
