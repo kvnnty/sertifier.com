@@ -108,6 +108,8 @@ export const useCertificateState = () => {
       color: "#000000",
       textAlign: "center",
       fontWeight: "normal",
+      fontStyle: "normal",
+      textDecoration: "normal",
     };
 
     setSelectedCertificate((prev) => ({

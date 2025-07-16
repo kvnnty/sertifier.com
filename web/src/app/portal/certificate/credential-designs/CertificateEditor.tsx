@@ -34,7 +34,7 @@ const CertificateEditor: React.FC = () => {
     selectUploadedImage,
     deleteImage,
   } = useCertificateState();
-  
+
   // State for color picker
   const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
   const [currentColor, setCurrentColor] = React.useState("#000000");
@@ -170,12 +170,20 @@ const CertificateEditor: React.FC = () => {
   }, []);
 
   // Handle color change
-  const handleColorChange = useCallback((color: string) => {
-    setCurrentColor(color);
-    if (selectedElement) {
-      updateElement(selectedElement.id, "fillColor", color);
-    }
-  }, [selectedElement, updateElement]);
+  const handleColorChange = useCallback(
+    (color: string) => {
+      setCurrentColor(color);
+      if (selectedElement) {
+        // Apply the correct color property based on element type
+        if (selectedElement.type === "text") {
+          updateElement(selectedElement.id, "color", color);
+        } else {
+          updateElement(selectedElement.id, "fillColor", color);
+        }
+      }
+    },
+    [selectedElement, updateElement]
+  );
 
   // Handle closing the color picker
   const handleCloseColorPicker = useCallback(() => {
@@ -282,6 +290,17 @@ const CertificateEditor: React.FC = () => {
                             fontWeight: selectedElement.fontWeight || "normal",
                             fontStyle: selectedElement.fontStyle || "normal",
                             textAlign: selectedElement.textAlign,
+                            textDecoration:
+                              selectedElement.textDecoration === "underline"
+                                ? "underline"
+                                : "none",
+                            textDecorationThickness: `${Math.max(
+                              1,
+                              selectedElement.fontSize * 0.06
+                            )}px`,
+                            textUnderlineOffset: `${
+                              selectedElement.fontSize * 0.15
+                            }px`, // Add some offset to match canvas rendering
                             transform: `translate(-50%, -50%) ${
                               selectedElement.rotation
                                 ? `rotate(${selectedElement.rotation}deg)`

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Download,
   Plus,
@@ -10,6 +10,7 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  AlignJustify,
   Square,
   Circle,
   Trash,
@@ -18,14 +19,29 @@ import {
   Redo,
   ArrowUp,
   ArrowDown,
+  Check,
 } from "lucide-react";
-import { CertificateElement } from "@/lib/mock/mockCertificates";
+import { CertificateElement as BaseCertificateElement } from "@/lib/mock/mockCertificates";
 import {
   Tooltip as TooltipRoot,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 // Custom Tooltip wrapper component
 const Tooltip = ({
@@ -44,6 +60,11 @@ const Tooltip = ({
     </TooltipProvider>
   );
 };
+
+// Extend the interface to include 'justify' as a valid textAlign value
+interface CertificateElement extends Omit<BaseCertificateElement, "textAlign"> {
+  textAlign?: "left" | "center" | "right" | "justify";
+}
 
 interface DynamicTopbarProps {
   selectedElement: CertificateElement | null;
@@ -86,6 +107,49 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
   onOpenColorPicker = () => {},
 }) => {
   const [showShapesDropdown, setShowShapesDropdown] = useState(false);
+
+  // Setup keyboard shortcuts for text formatting
+  useEffect(() => {
+    if (!selectedElement || selectedElement.type !== "text") return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case "b":
+            e.preventDefault();
+            onUpdateElement(
+              selectedElement.id,
+              "fontWeight",
+              selectedElement.fontWeight === "bold" ? "normal" : "bold"
+            );
+            break;
+          case "i":
+            e.preventDefault();
+            onUpdateElement(
+              selectedElement.id,
+              "fontStyle",
+              selectedElement.fontStyle === "italic" ? "normal" : "italic"
+            );
+            break;
+          case "u":
+            e.preventDefault();
+            onUpdateElement(
+              selectedElement.id,
+              "textDecoration",
+              selectedElement.textDecoration === "underline"
+                ? "normal"
+                : "underline"
+            );
+            break;
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedElement, onUpdateElement]);
 
   const handleShapeAdd = (shapeType: "rectangle" | "circle") => {
     onAddShape(shapeType);
@@ -250,121 +314,232 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
 
   // Render controls for text elements
   if (selectedElement.type === "text") {
+    // Get the current alignment icon
+    const getAlignmentIcon = () => {
+      switch (selectedElement.textAlign) {
+        case "left":
+          return <AlignLeft size={16} />;
+        case "center":
+          return <AlignCenter size={16} />;
+        case "right":
+          return <AlignRight size={16} />;
+        default:
+          return <AlignLeft size={16} />;
+      }
+    };
+
     return (
       <div className="border-b border-gray-200 p-4 bg-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <select
+            <Select
               value={selectedElement.fontFamily || "Arial"}
-              onChange={(e) =>
-                onUpdateElement(
-                  selectedElement.id,
-                  "fontFamily",
-                  e.target.value
-                )
+              onValueChange={(value) =>
+                onUpdateElement(selectedElement.id, "fontFamily", value)
               }
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
-              <option value="Arial">Arial</option>
-              <option value="Georgia">Georgia</option>
-              <option value="Times New Roman">Times New Roman</option>
-              <option value="Helvetica">Helvetica</option>
-              <option value="Courier New">Courier New</option>
-            </select>
+              <SelectTrigger className="w-[180px] focus:ring-[#086956]/50 focus:border-[#086956]">
+                <SelectValue placeholder="Select font" className="text-black" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Arial">Arial</SelectItem>
+                <SelectItem value="Georgia">Georgia</SelectItem>
+                <SelectItem value="Times New Roman">Times New Roman</SelectItem>
+                <SelectItem value="font-global">Sans-Serif</SelectItem>
+                <SelectItem value="Helvetica">Helvetica</SelectItem>
+                <SelectItem value="Courier New">Courier New</SelectItem>
+              </SelectContent>
+            </Select>
 
-            <select
+            <Select
               value={selectedElement.fontSize?.toString() || "16"}
-              onChange={(e) =>
-                onUpdateElement(
-                  selectedElement.id,
-                  "fontSize",
-                  parseInt(e.target.value)
-                )
+              onValueChange={(value) =>
+                onUpdateElement(selectedElement.id, "fontSize", parseInt(value))
               }
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
-              {[
-                8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48, 56, 64, 72,
-              ].map((size) => (
-                <option key={size} value={size.toString()}>
-                  {size}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-[80px] focus:ring-[#086956]/50 focus:border-[#086956]">
+                <SelectValue placeholder="Size" />
+              </SelectTrigger>
+              <SelectContent>
+                {[
+                  8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48, 56, 64, 72,
+                ].map((size) => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-              <button
-                onClick={() =>
-                  onUpdateElement(
-                    selectedElement.id,
-                    "fontWeight",
-                    selectedElement.fontWeight === "bold" ? "normal" : "bold"
-                  )
-                }
-                className={`p-2 ${
-                  selectedElement.fontWeight === "bold"
-                    ? "bg-green-500 text-white"
-                    : "bg-white text-gray-700"
-                } hover:bg-green-50`}
-              >
-                <Bold size={16} />
-              </button>
-              <button
-                onClick={() =>
-                  onUpdateElement(
-                    selectedElement.id,
-                    "fontStyle",
-                    selectedElement.fontStyle === "italic" ? "normal" : "italic"
-                  )
-                }
-                className={`p-2 ${
-                  selectedElement.fontStyle === "italic"
-                    ? "bg-green-500 text-white"
-                    : "bg-white text-gray-700"
-                } hover:bg-green-50`}
-              >
-                <Italic size={16} />
-              </button>
-              <button className="p-2 bg-white text-gray-700 hover:bg-green-50">
-                <Underline size={16} />
-              </button>
-            </div>
+            <ToggleGroup
+              type="multiple"
+              className="border border-gray-300 rounded-sm"
+            >
+              <Tooltip content="Bold (Ctrl+B)">
+                <ToggleGroupItem
+                  value="bold"
+                  aria-label="Toggle bold"
+                  data-state={
+                    selectedElement.fontWeight === "bold" ? "on" : "off"
+                  }
+                  onClick={() =>
+                    onUpdateElement(
+                      selectedElement.id,
+                      "fontWeight",
+                      selectedElement.fontWeight === "bold" ? "normal" : "bold"
+                    )
+                  }
+                  className={`p-2 ${
+                    selectedElement.fontWeight === "bold"
+                      ? "bg-[#086956] text-white"
+                      : ""
+                  }`}
+                >
+                  <Bold size={16} />
+                </ToggleGroupItem>
+              </Tooltip>
 
-            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-              {["left", "center", "right"].map((align) => {
-                const Icon =
-                  align === "left"
-                    ? AlignLeft
-                    : align === "center"
-                    ? AlignCenter
-                    : AlignRight;
-                return (
+              <Tooltip content="Italic (Ctrl+I)">
+                <ToggleGroupItem
+                  value="italic"
+                  aria-label="Toggle italic"
+                  data-state={
+                    selectedElement.fontStyle === "italic" ? "on" : "off"
+                  }
+                  onClick={() =>
+                    onUpdateElement(
+                      selectedElement.id,
+                      "fontStyle",
+                      selectedElement.fontStyle === "italic"
+                        ? "normal"
+                        : "italic"
+                    )
+                  }
+                  className={`p-2 ${
+                    selectedElement.fontStyle === "italic"
+                      ? "bg-[#086956] text-white"
+                      : ""
+                  }`}
+                >
+                  <Italic size={16} />
+                </ToggleGroupItem>
+              </Tooltip>
+
+              <Tooltip content="Underline (Ctrl+U)">
+                <ToggleGroupItem
+                  value="underline"
+                  aria-label="Toggle underline"
+                  data-state={
+                    selectedElement.textDecoration === "underline"
+                      ? "on"
+                      : "off"
+                  }
+                  onClick={() =>
+                    onUpdateElement(
+                      selectedElement.id,
+                      "textDecoration",
+                      selectedElement.textDecoration === "underline"
+                        ? "normal"
+                        : "underline"
+                    )
+                  }
+                  className={`p-2 ${
+                    selectedElement.textDecoration === "underline"
+                      ? "bg-[#086956] text-white"
+                      : ""
+                  }`}
+                >
+                  <Underline size={16} />
+                </ToggleGroupItem>
+              </Tooltip>
+            </ToggleGroup>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-10 px-3 border border-gray-300 bg-white hover:bg-gray-50"
+                >
+                  {getAlignmentIcon()}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-fit p-0">
+                <div className="flex flex-col">
                   <button
-                    key={align}
                     onClick={() =>
-                      onUpdateElement(selectedElement.id, "textAlign", align)
+                      onUpdateElement(selectedElement.id, "textAlign", "left")
                     }
-                    className={`p-2 ${
-                      selectedElement.textAlign === align
-                        ? "bg-green-500 text-white"
-                        : "bg-white text-gray-700 hover:bg-green-50"
+                    className={`flex items-center gap-2 px-4 py-2 hover:bg-gray-100 ${
+                      selectedElement.textAlign === "left" ? "bg-gray-100" : ""
                     }`}
                   >
-                    <Icon size={16} />
+                    <AlignLeft size={16} />
+                    {selectedElement.textAlign === "left" && (
+                      <Check size={16} className="ml-auto text-[#086956]" />
+                    )}
                   </button>
-                );
-              })}
-            </div>
+                  <button
+                    onClick={() =>
+                      onUpdateElement(selectedElement.id, "textAlign", "center")
+                    }
+                    className={`flex items-center gap-2 px-4 py-2 hover:bg-gray-100 ${
+                      selectedElement.textAlign === "center"
+                        ? "bg-gray-100"
+                        : ""
+                    }`}
+                  >
+                    <AlignCenter size={16} />
+                    {selectedElement.textAlign === "center" && (
+                      <Check size={16} className="ml-auto text-[#086956]" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() =>
+                      onUpdateElement(selectedElement.id, "textAlign", "right")
+                    }
+                    className={`flex items-center gap-2 px-4 py-2 hover:bg-gray-100 ${
+                      selectedElement.textAlign === "right" ? "bg-gray-100" : ""
+                    }`}
+                  >
+                    <AlignRight size={16} />
+                    {selectedElement.textAlign === "right" && (
+                      <Check size={16} className="ml-auto text-[#086956]" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() =>
+                      onUpdateElement(
+                        selectedElement.id,
+                        "textAlign",
+                        "justify"
+                      )
+                    }
+                    className={`flex items-center gap-2 px-4 py-2 hover:bg-gray-100 ${
+                      selectedElement.textAlign === "justify"
+                        ? "bg-gray-100"
+                        : ""
+                    }`}
+                  >
+                    <AlignJustify size={16} />
+                    {selectedElement.textAlign === "justify" && (
+                      <Check size={16} className="ml-auto text-[#086956]" />
+                    )}
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
 
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Color:</span>
-              <input
-                type="color"
-                value={selectedElement.color || "#000000"}
-                onChange={(e) =>
-                  onUpdateElement(selectedElement.id, "color", e.target.value)
+              <button
+                onClick={() =>
+                  onOpenColorPicker(selectedElement.color || "#000000")
                 }
-                className="w-10 h-8 border border-gray-300 rounded cursor-pointer"
+                className="w-8 h-8 border border-gray-300 rounded-sm cursor-pointer"
+                style={{ backgroundColor: selectedElement.color || "#000000" }}
+                aria-label="Open color picker"
               />
             </div>
           </div>
@@ -388,9 +563,13 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Fill:</span>
               <button
-                onClick={() => onOpenColorPicker(selectedElement.fillColor || "#000000")}
+                onClick={() =>
+                  onOpenColorPicker(selectedElement.fillColor || "#000000")
+                }
                 className="w-8 h-8 border border-gray-300 rounded-sm cursor-pointer"
-                style={{ backgroundColor: selectedElement.fillColor || "#000000" }}
+                style={{
+                  backgroundColor: selectedElement.fillColor || "#000000",
+                }}
                 aria-label="Open color picker"
               />
             </div>
@@ -407,7 +586,7 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
                     parseInt(e.target.value)
                   )
                 }
-                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#086956]/50"
                 min="10"
                 max="800"
               />
@@ -425,7 +604,7 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
                     parseInt(e.target.value)
                   )
                 }
-                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#086956]/50"
                 min="10"
                 max="800"
               />
@@ -446,7 +625,7 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
                       parseInt(e.target.value)
                     )
                   }
-                  className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#086956]/50"
                   min="0"
                   max="100"
                 />

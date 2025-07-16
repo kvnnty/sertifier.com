@@ -151,7 +151,8 @@ export const drawShapeHighlight = (
   element: CertificateElement,
   selectedElement: CertificateElement | null
 ) => {
-  ctx.strokeStyle = selectedElement?.id === element.id ? "#3B82F6" : "#94A3B8";
+  // Use #086956 for selected elements, light gray for hovered
+  ctx.strokeStyle = selectedElement?.id === element.id ? "#086956" : "#94A3B8";
   ctx.lineWidth = 2;
   ctx.setLineDash(selectedElement?.id === element.id ? [] : [5, 5]);
 
@@ -195,6 +196,31 @@ export const drawTextElement = (
     drawTextWithLetterSpacing(ctx, element);
   } else {
     ctx.fillText(element.content, element.x, element.y);
+
+    // Draw underline if textDecoration is set to underline
+    if (element.textDecoration === "underline") {
+      const metrics = ctx.measureText(element.content);
+      const textWidth = metrics.width;
+
+      // Calculate underline position based on text alignment
+      let underlineX = element.x;
+      if (element.textAlign === "center") {
+        underlineX -= textWidth / 2;
+      } else if (element.textAlign === "right") {
+        underlineX -= textWidth;
+      }
+
+      // Draw the underline with increased offset from the text baseline
+      const underlineY = element.y + element.fontSize * 0.3; // Increased from 0.15 to 0.3
+      const underlineThickness = Math.max(1, element.fontSize * 0.06); // Slightly thicker
+
+      ctx.beginPath();
+      ctx.strokeStyle = element.color;
+      ctx.lineWidth = underlineThickness;
+      ctx.moveTo(underlineX, underlineY);
+      ctx.lineTo(underlineX + textWidth, underlineY);
+      ctx.stroke();
+    }
   }
 
   if (hoveredElement?.id === element.id || selectedElement?.id === element.id) {
@@ -222,11 +248,28 @@ export const drawTextWithLetterSpacing = (
     currentX -= totalWidth;
   }
 
+  // Store the starting X position for underline
+  const startX = currentX;
+
   chars.forEach((char: string) => {
     ctx.fillText(char, currentX, element.y);
     currentX +=
       ctx.measureText(char).width + parseFloat(element.letterSpacing || "0");
   });
+
+  // Draw underline if textDecoration is set to underline
+  if (element.textDecoration === "underline") {
+    // Draw the underline with increased offset from the text baseline
+    const underlineY = element.y + element.fontSize * 0.3; // Increased from 0.15 to 0.3
+    const underlineThickness = Math.max(1, element.fontSize * 0.06); // Slightly thicker
+
+    ctx.beginPath();
+    ctx.strokeStyle = element.color;
+    ctx.lineWidth = underlineThickness;
+    ctx.moveTo(startX, underlineY);
+    ctx.lineTo(currentX, underlineY);
+    ctx.stroke();
+  }
 };
 
 export const drawElementHighlight = (
@@ -234,18 +277,38 @@ export const drawElementHighlight = (
   element: CertificateElement,
   selectedElement: CertificateElement | null
 ) => {
-  const metrics = ctx.measureText(element.content);
-  const textWidth = metrics.width;
-  const textHeight = element.fontSize;
+  // Get more accurate text metrics
+  ctx.font = `${element.fontStyle === "italic" ? "italic " : ""}${
+    element.fontWeight || "normal"
+  } ${element.fontSize}px ${element.fontFamily}`;
 
-  ctx.strokeStyle = selectedElement?.id === element.id ? "#3B82F6" : "#94A3B8";
+  const metrics = ctx.measureText(element.content);
+  // Use more accurate height calculation based on font metrics
+  const textHeight = element.fontSize * 1.2; // Multiply by 1.2 for better height approximation
+
+  // Use the actual width of the text from metrics
+  const textWidth = metrics.width;
+
+  // Use #086956 for selected elements, light gray for hovered
+  ctx.strokeStyle = selectedElement?.id === element.id ? "#086956" : "#94A3B8";
   ctx.lineWidth = 2;
   ctx.setLineDash(selectedElement?.id === element.id ? [] : [5, 5]);
 
-  const padding = 8;
-  const rectX = element.x - textWidth / 2 - padding;
+  // Adjust padding based on font size for better proportions
+  const padding = Math.max(8, element.fontSize / 3);
+
+  // Calculate rectangle position based on text alignment
+  let rectX = element.x - padding;
+  let rectWidth = textWidth + padding * 2;
+
+  // Adjust position based on text alignment
+  if (element.textAlign === "center") {
+    rectX = element.x - textWidth / 2 - padding;
+  } else if (element.textAlign === "right") {
+    rectX = element.x - textWidth - padding;
+  }
+
   const rectY = element.y - textHeight / 2 - padding;
-  const rectWidth = textWidth + padding * 2;
   const rectHeight = textHeight + padding * 2;
 
   ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
@@ -265,7 +328,7 @@ export const drawResizeHandles = (
   height: number
 ) => {
   const handleSize = 8;
-  ctx.fillStyle = "#3B82F6";
+  ctx.fillStyle = "#086956";
 
   ctx.fillRect(x - handleSize / 2, y - handleSize / 2, handleSize, handleSize);
   ctx.fillRect(
@@ -313,12 +376,12 @@ export const drawResizeHandles = (
   );
 
   const rotateHandleY = y - 25;
-  ctx.fillStyle = "#10B981";
+  ctx.fillStyle = "#086956";
   ctx.beginPath();
   ctx.arc(x + width / 2, rotateHandleY, handleSize / 2, 0, 2 * Math.PI);
   ctx.fill();
 
-  ctx.strokeStyle = "#10B981";
+  ctx.strokeStyle = "#086956";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(x + width / 2, rotateHandleY + handleSize / 2);
