@@ -21,6 +21,7 @@ export default function VerificationPage() {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
+  
   return (
     <div className="max-w-3xl mx-auto space-y-6 py-10">
       <Card>
