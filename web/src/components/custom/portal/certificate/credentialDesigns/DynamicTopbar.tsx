@@ -20,6 +20,9 @@ import {
   ArrowUp,
   ArrowDown,
   Check,
+  Undo2Icon,
+  Redo2Icon,
+  ChevronUp,
 } from "lucide-react";
 import { CertificateElement as BaseCertificateElement } from "@/lib/mock/mockCertificates";
 import {
@@ -42,6 +45,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { FaTrashAlt } from "react-icons/fa";
 
 // Custom Tooltip wrapper component
 const Tooltip = ({
@@ -156,102 +160,136 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
     setShowShapesDropdown(false);
   };
 
-  // Action buttons to show on the right side
   const renderActionButtons = () => (
-    <div className="flex items-center space-x-2">
-      <Tooltip content="Duplicate (Cmd + D / Ctrl + D)">
-        <button
-          onClick={onDuplicate}
-          disabled={!selectedElement}
-          className={`p-2 rounded-md ${
-            selectedElement
-              ? "text-gray-700 hover:bg-gray-100"
-              : "text-gray-400 cursor-not-allowed"
-          }`}
-          aria-label="Duplicate"
-        >
-          <Copy size={18} />
-        </button>
-      </Tooltip>
+    <div className="flex items-center gap-4">
+      {/* Group 1: Duplicate and Delete */}
+      <div className="flex gap-1">
+        <Tooltip content="Duplicate (Cmd + D / Ctrl + D)">
+          <button
+            onClick={onDuplicate}
+            disabled={!selectedElement}
+            className={`rounded-sm ${
+              selectedElement
+                ? "text-gray-700 hover:bg-gray-100"
+                : "text-gray-400 cursor-not-allowed"
+            }`}
+            aria-label="Duplicate"
+          >
+            <div
+              className="border border-gray-300 inline-flex items-center justify-center p-2 rounded-sm cursor-pointer"
+              style={{ height: "40px" }}
+            >
+              <Copy size={18} />
+            </div>
+          </button>
+        </Tooltip>
 
-      <Tooltip content="Delete (Del, Backspace)">
-        <button
-          onClick={onDelete}
-          disabled={!selectedElement}
-          className={`p-2 rounded-md ${
-            selectedElement
-              ? "text-gray-700 hover:bg-gray-100"
-              : "text-gray-400 cursor-not-allowed"
-          }`}
-          aria-label="Delete"
-        >
-          <Trash size={18} />
-        </button>
-      </Tooltip>
+        <Tooltip content="Delete (Del, Backspace)">
+          <button
+            onClick={onDelete}
+            disabled={!selectedElement}
+            className={`rounded-sm ${
+              selectedElement
+                ? "text-gray-700 hover:bg-gray-100"
+                : "text-gray-400 cursor-not-allowed"
+            }`}
+            aria-label="Delete"
+          >
+            <div
+              className="border border-gray-300 text-red-500 inline-flex items-center justify-center p-2 rounded-sm cursor-pointer"
+              style={{ height: "40px" }}
+            >
+              <FaTrashAlt size={18} />
+            </div>
+          </button>
+        </Tooltip>
+      </div>
 
-      <div className="h-6 w-px bg-gray-300 mx-1"></div>
+      {/* Group 2: Undo and Redo */}
+      <div className="flex gap-1">
+        <Tooltip content="Undo (Ctrl + Z / Cmd + Z)">
+          <button
+            onClick={onUndo}
+            disabled={!canUndo}
+            className={`rounded-sm ${
+              canUndo
+                ? "text-gray-700 hover:bg-gray-100"
+                : "text-gray-400 cursor-not-allowed"
+            }`}
+            aria-label="Undo"
+          >
+            <div
+              className="border border-gray-300 inline-flex items-center justify-center p-2 rounded-sm cursor-pointer"
+              style={{ height: "40px" }}
+            >
+              <Undo2Icon size={18} />
+            </div>
+          </button>
+        </Tooltip>
 
-      <Tooltip content="Undo (Ctrl + Z / Cmd + Z)">
-        <button
-          onClick={onUndo}
-          disabled={!canUndo}
-          className={`p-2 rounded-md ${
-            canUndo
-              ? "text-gray-700 hover:bg-gray-100"
-              : "text-gray-400 cursor-not-allowed"
-          }`}
-          aria-label="Undo"
-        >
-          <Undo size={18} />
-        </button>
-      </Tooltip>
+        <Tooltip content="Redo (Ctrl + Y / Cmd + Y)">
+          <button
+            onClick={onRedo}
+            disabled={!canRedo}
+            className={`rounded-sm ${
+              canRedo
+                ? "text-gray-700 hover:bg-gray-100"
+                : "text-gray-400 cursor-not-allowed"
+            }`}
+            aria-label="Redo"
+          >
+            <div
+              className="border border-gray-300 inline-flex items-center justify-center p-2 rounded-sm cursor-pointer"
+              style={{ height: "40px" }}
+            >
+              <Redo2Icon size={18} />
+            </div>
+          </button>
+        </Tooltip>
+      </div>
 
-      <Tooltip content="Redo (Ctrl + Y / Cmd + Y)">
-        <button
-          onClick={onRedo}
-          disabled={!canRedo}
-          className={`p-2 rounded-md ${
-            canRedo
-              ? "text-gray-700 hover:bg-gray-100"
-              : "text-gray-400 cursor-not-allowed"
-          }`}
-          aria-label="Redo"
-        >
-          <Redo size={18} />
-        </button>
-      </Tooltip>
+      {/* Group 3: Layer Movement */}
+      <div className="flex gap-1">
+        <Tooltip content="Move Layer Up">
+          <button
+            onClick={onSendUpwards}
+            disabled={!selectedElement}
+            className={`rounded-sm ${
+              selectedElement
+                ? "text-gray-700 hover:bg-gray-100"
+                : "text-gray-400 cursor-not-allowed"
+            }`}
+            aria-label="Send Upwards"
+          >
+            <div
+              className="border border-gray-300 inline-flex items-center justify-center p-2 rounded-sm font-bold cursor-pointer"
+              style={{ height: "40px" }}
+            >
+              <ChevronUp size={18} />
+            </div>
+          </button>
+        </Tooltip>
 
-      <div className="h-6 w-px bg-gray-300 mx-1"></div>
-
-      <Tooltip content="Move Layer Up">
-        <button
-          onClick={onSendUpwards}
-          disabled={!selectedElement}
-          className={`p-2 rounded-md ${
-            selectedElement
-              ? "text-gray-700 hover:bg-gray-100"
-              : "text-gray-400 cursor-not-allowed"
-          }`}
-          aria-label="Send Upwards"
-        >
-          <ArrowUp size={18} />
-        </button>
-      </Tooltip>
-
-      <Tooltip content="Move Layer Down">
-        <button
-          onClick={onSendDownwards}
-          disabled={!selectedElement}
-          className={`p-2 rounded-md ${
-            selectedElement
-              ? "text-gray-700 hover:bg-gray-100"
-              : "text-gray-400 cursor-not-allowed"
-          }`}
-          aria-label="Send Downwards"
-        >
-          <ArrowDown size={18} />
-        </button>
-      </Tooltip>
+        <Tooltip content="Move Layer Down">
+          <button
+            onClick={onSendDownwards}
+            disabled={!selectedElement}
+            className={`rounded-sm ${
+              selectedElement
+                ? "text-gray-700 hover:bg-gray-100"
+                : "text-gray-400 cursor-not-allowed"
+            }`}
+            aria-label="Send Downwards"
+          >
+            <div
+              className="border border-gray-300 inline-flex items-center justify-center p-2 rounded-sm font-bold cursor-pointer"
+              style={{ height: "40px" }}
+            >
+              <ChevronDown size={18} />
+            </div>
+          </button>
+        </Tooltip>
+      </div>
     </div>
   );
 
@@ -262,7 +300,7 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
           <div className="flex items-center space-x-4">
             <button
               onClick={onAddText}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-500 bg-transparent hover:bg-gray-100 cursor-pointer text-gray-700 rounded-sm"
             >
               <Plus size={16} />
               Add Text
@@ -270,7 +308,7 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
 
             <button
               onClick={onImportImage}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-500 bg-transparent hover:bg-gray-100 cursor-pointer text-gray-700 rounded-sm"
             >
               <Image size={16} />
               Import Image
@@ -279,7 +317,7 @@ const DynamicTopbar: React.FC<DynamicTopbarProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowShapesDropdown(!showShapesDropdown)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 border border-gray-500 bg-transparent hover:bg-gray-100 cursor-pointer text-gray-700 rounded-sm"
               >
                 Add Shapes
                 <ChevronDown size={16} />

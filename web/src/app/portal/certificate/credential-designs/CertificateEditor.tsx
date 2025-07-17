@@ -7,6 +7,8 @@ import SidebarPanel, {
 import { useCertificateState } from "@/app/hooks/useCertificates";
 import { useCanvasInteraction } from "@/app/hooks/useCanvasInteraction";
 import { findElementAtPosition } from "@/lib/utils/canvasUtils";
+import CertificateSideBar from "@/components/custom/portal/certificate/SideBar";
+import { useState } from "react";
 
 const CertificateEditor: React.FC = () => {
   const {
@@ -39,6 +41,14 @@ const CertificateEditor: React.FC = () => {
   const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
   const [currentColor, setCurrentColor] = React.useState("#000000");
 
+  // State for attributes
+  const [attributeInstanceCounts, setAttributeInstanceCounts] = React.useState<
+    Record<string, number>
+  >({});
+
+  // State for sidebar feature
+  const [sidebarFeature, setSidebarFeature] = useState<string>("templates");
+
   const {
     canvasRef,
     inputRef,
@@ -66,6 +76,90 @@ const CertificateEditor: React.FC = () => {
     updateElement,
     setSelectedCertificate
   );
+
+  // Calculate attribute instance counts
+  React.useEffect(() => {
+    if (!selectedCertificate) return;
+
+    const counts: Record<string, number> = {};
+
+    selectedCertificate.elements.forEach((element) => {
+      if (element.type === "text") {
+        // Check for attribute placeholders like [recipient.name]
+        const matches = element.content.match(/\[[\w.]+\]/g);
+        if (matches) {
+          matches.forEach((match) => {
+            counts[match] = (counts[match] || 0) + 1;
+          });
+        }
+      }
+    });
+
+    setAttributeInstanceCounts(counts);
+  }, [selectedCertificate]);
+
+  // Add attribute to certificate
+  const handleAddAttribute = (attributePlaceholder: string) => {
+    const newElement = {
+      id: Date.now(),
+      type: "text",
+      content: attributePlaceholder,
+      x: selectedCertificate.width / 2,
+      y: selectedCertificate.height / 2,
+      fontSize: 24,
+      fontFamily: "Arial",
+      color: "#000000",
+      textAlign: "center" as "center", // Type assertion to fix the error
+      fontWeight: "normal",
+    };
+
+    const updatedCertificate = {
+      ...selectedCertificate,
+      elements: [...selectedCertificate.elements, newElement],
+    };
+
+    setSelectedCertificate(updatedCertificate);
+    setSelectedElement(newElement);
+
+    // Update attribute counts
+    setAttributeInstanceCounts((prev) => ({
+      ...prev,
+      [attributePlaceholder]: (prev[attributePlaceholder] || 0) + 1,
+    }));
+  };
+
+  // Remove all instances of an attribute
+  const handleRemoveAllAttributeInstances = (attributePlaceholder: string) => {
+    const updatedElements = selectedCertificate.elements.filter((element) => {
+      if (element.type === "text") {
+        return !element.content.includes(attributePlaceholder);
+      }
+      return true;
+    });
+
+    const updatedCertificate = {
+      ...selectedCertificate,
+      elements: updatedElements,
+    };
+
+    setSelectedCertificate(updatedCertificate);
+
+    // If the selected element was removed, clear selection
+    if (
+      selectedElement &&
+      selectedElement.type === "text" &&
+      selectedElement.content.includes(attributePlaceholder)
+    ) {
+      setSelectedElement(null);
+    }
+
+    // Update attribute counts
+    setAttributeInstanceCounts((prev) => {
+      const newCounts = { ...prev };
+      delete newCounts[attributePlaceholder];
+      return newCounts;
+    });
+  };
 
   // Calculate the scale factor to fit the certificate in the viewport
   const canvasContainerStyle = useMemo(() => {
@@ -191,49 +285,70 @@ const CertificateEditor: React.FC = () => {
     setActiveSidebarFeature("templates");
   }, []);
 
+  // Handle sidebar feature change
+  const handleSidebarFeatureChange = (feature: string) => {
+    setSidebarFeature(feature);
+
+    // Map sidebar features to activeSidebarFeature values
+    const featureMap: Record<string, any> = {
+      templates: "templates",
+      attributes: "attributes",
+      elements: "elements",
+      layers: "settings",
+      qrcode: "settings",
+    };
+
+    setActiveSidebarFeature(featureMap[feature] || "templates");
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 font-global">
-      <div className="container mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <DynamicTopbar
-            selectedElement={selectedElement}
-            onUpdateElement={updateElement}
-            onAddText={addTextElement}
-            onAddShape={addShapeElement}
-            onImportImage={() => console.log("Import image")}
-            onDownload={downloadCertificate}
-            // New props for action buttons
-            onDuplicate={duplicateElement}
-            onDelete={deleteElement}
-            onUndo={undo}
-            onRedo={redo}
-            onSendUpwards={sendUpwards}
-            onSendDownwards={sendDownwards}
-            canUndo={canUndo}
-            canRedo={canRedo}
-            // Color picker
-            onOpenColorPicker={handleOpenColorPicker}
+    <div className="min-h-screen bg-gray-50 font-global fixed top-auto left-0 w-full">
+      <CertificateSideBar
+        onFeatureChange={handleSidebarFeatureChange}
+        activeFeature={sidebarFeature}
+      />
+      <div className="pl-20">
+        <div className="flex flex-row">
+          <SidebarPanel
+            feature={colorPickerOpen ? "colorPicker" : activeSidebarFeature}
+            certificates={certificates}
+            selectedCertificate={selectedCertificate}
+            onSelectCertificate={setSelectedCertificate}
+            onCreateBlankCertificate={createBlankCertificate}
+            certificateSize={certificateSize}
+            onCertificateSizeChange={handleCertificateSizeChange}
+            uploadedImages={uploadedImages}
+            onImageUpload={handleImageUpload}
+            onSelectUploadedImage={selectUploadedImage}
+            onDeleteImage={deleteImage}
+            currentColor={currentColor}
+            onColorChange={handleColorChange}
+            onCloseColorPicker={handleCloseColorPicker}
+            onAddAttribute={handleAddAttribute}
+            onRemoveAllAttributeInstances={handleRemoveAllAttributeInstances}
+            attributeInstanceCounts={attributeInstanceCounts}
           />
 
-          <div className="flex min-h-[600px]">
-            <SidebarPanel
-              feature={colorPickerOpen ? "colorPicker" : activeSidebarFeature}
-              certificates={certificates}
-              selectedCertificate={selectedCertificate}
-              onSelectCertificate={setSelectedCertificate}
-              onCreateBlankCertificate={createBlankCertificate}
-              certificateSize={certificateSize}
-              onCertificateSizeChange={handleCertificateSizeChange}
-              uploadedImages={uploadedImages}
-              onImageUpload={handleImageUpload}
-              onSelectUploadedImage={selectUploadedImage}
-              onDeleteImage={deleteImage}
-              // Color picker props
-              currentColor={currentColor}
-              onColorChange={handleColorChange}
-              onCloseColorPicker={handleCloseColorPicker}
+          <div className="flex-1 bg-white overflow-hidden">
+            <DynamicTopbar
+              selectedElement={selectedElement}
+              onUpdateElement={updateElement}
+              onAddText={addTextElement}
+              onAddShape={addShapeElement}
+              onImportImage={() => console.log("Import image")}
+              onDownload={downloadCertificate}
+              onDuplicate={duplicateElement}
+              onDelete={deleteElement}
+              onUndo={undo}
+              onRedo={redo}
+              onSendUpwards={sendUpwards}
+              onSendDownwards={sendDownwards}
+              canUndo={canUndo}
+              canRedo={canRedo}
+              onOpenColorPicker={handleOpenColorPicker}
             />
-            <div className="flex-1 p-6 flex items-center justify-center bg-gray-50 relative">
+
+            <div className="p-6 flex items-center justify-center bg-gray-50 min-h-[600px]">
               {isLoading ? (
                 <div className="text-center">
                   <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -300,7 +415,7 @@ const CertificateEditor: React.FC = () => {
                             )}px`,
                             textUnderlineOffset: `${
                               selectedElement.fontSize * 0.15
-                            }px`, // Add some offset to match canvas rendering
+                            }px`,
                             transform: `translate(-50%, -50%) ${
                               selectedElement.rotation
                                 ? `rotate(${selectedElement.rotation}deg)`

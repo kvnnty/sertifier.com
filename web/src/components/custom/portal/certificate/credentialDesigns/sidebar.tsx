@@ -13,7 +13,9 @@ import {
 import {
   Check,
   CheckSquare,
+  HelpCircle,
   MoreVertical,
+  Search,
   Square,
   Trash,
   Upload,
@@ -26,6 +28,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Define certificate size and orientation types
 export type CertificateSize =
@@ -62,8 +71,76 @@ export interface UploadedImage {
   timestamp: number;
 }
 
+// Define attribute interface
+export interface Attribute {
+  id: string;
+  name: string;
+  placeholder: string;
+  tooltip: string;
+  category: "recipient" | "credential" | "issuer";
+}
+
+export const ATTRIBUTES: Attribute[] = [
+  {
+    id: "recipient_name",
+    name: "Recipient Name",
+    placeholder: "[recipient.name]",
+    tooltip: "The full name of the certificate recipient",
+    category: "recipient",
+  },
+  {
+    id: "recipient_email",
+    name: "Recipient E-Mail",
+    placeholder: "[recipient.email]",
+    tooltip: "The email address of the certificate recipient",
+    category: "recipient",
+  },
+  {
+    id: "credential_id",
+    name: "Credential ID",
+    placeholder: "[credential.id]",
+    tooltip: "Unique identifier for this credential",
+    category: "credential",
+  },
+  {
+    id: "issue_date",
+    name: "Issue Date",
+    placeholder: "[credential.issueDate]",
+    tooltip: "The date when the credential was issued",
+    category: "credential",
+  },
+  {
+    id: "credential_name",
+    name: "Credential Name",
+    placeholder: "[credential.name]",
+    tooltip: "The name of the credential",
+    category: "credential",
+  },
+  {
+    id: "credential_description",
+    name: "Credential Description",
+    placeholder: "[credential.description]",
+    tooltip: "Description of the credential",
+    category: "credential",
+  },
+  {
+    id: "expire_date",
+    name: "Expire Date",
+    placeholder: "[credential.expiredate]",
+    tooltip: "The date when the credential expires",
+    category: "credential",
+  },
+  {
+    id: "issuer_name",
+    name: "Issuer Name",
+    placeholder: "[issuer.name]",
+    tooltip: "Name of the organization issuing the credential",
+    category: "issuer",
+  },
+];
+
 interface SidebarPanelProps {
-  feature: "templates" | "elements" | "settings" | "colorPicker";
+  feature: "templates" | "elements" | "settings" | "colorPicker" | "attributes";
   certificates?: Certificate[];
   selectedCertificate?: Certificate;
   onSelectCertificate?: (certificate: Certificate) => void;
@@ -73,11 +150,15 @@ interface SidebarPanelProps {
   uploadedImages?: UploadedImage[];
   onImageUpload?: (file: File) => void;
   onSelectUploadedImage?: (image: UploadedImage) => void;
-  onDeleteImage?: (imageId: string) => void; // Added prop for deleting images
+  onDeleteImage?: (imageId: string) => void;
   // Color picker props
   currentColor?: string;
   onColorChange?: (color: string) => void;
   onCloseColorPicker?: () => void;
+  // Attributes props
+  onAddAttribute?: (attribute: string) => void;
+  onRemoveAllAttributeInstances?: (attribute: string) => void;
+  attributeInstanceCounts?: Record<string, number>;
   children?: React.ReactNode;
 }
 
@@ -221,10 +302,15 @@ const SidebarPanel: React.FC<SidebarPanelProps> = ({
   currentColor = "#000000",
   onColorChange = () => {},
   onCloseColorPicker = () => {},
+  // Attributes props
+  onAddAttribute = () => {},
+  onRemoveAllAttributeInstances = () => {},
+  attributeInstanceCounts = {},
   children,
 }) => {
   const [activeTab, setActiveTab] = useState<"library" | "uploads">("library");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const groupIntoPairs = (items: any[]) => {
     const pairs = [];
@@ -341,6 +427,120 @@ const SidebarPanel: React.FC<SidebarPanelProps> = ({
     );
   };
 
+  // Render attributes panel
+  const renderAttributesPanel = () => {
+    const filteredAttributes = ATTRIBUTES.filter(
+      (attr: Attribute) =>
+        attr.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        attr.placeholder.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // Group attributes by category
+    const recipientAttributes = filteredAttributes.filter(
+      (attr: Attribute) => attr.category === "recipient"
+    );
+    const credentialAttributes = filteredAttributes.filter(
+      (attr: Attribute) => attr.category === "credential"
+    );
+    const issuerAttributes = filteredAttributes.filter(
+      (attr: Attribute) => attr.category === "issuer"
+    );
+
+    const renderAttributeItem = (attribute: Attribute) => {
+      const count = attributeInstanceCounts[attribute.placeholder] || 0;
+
+      return (
+        <div key={attribute.id} className="border-b border-gray-200 py-3">
+          <div className="flex items-center justify-between">
+            <span className="font-medium text-[#086956]">{attribute.name}</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="text-gray-400 hover:text-gray-600">
+                    <HelpCircle size={20} />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p className="text-xs">{attribute.tooltip}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <div
+              className="text-gray-400 cursor-pointer hover:text-gray-600"
+              onClick={() => onAddAttribute(attribute.placeholder)}
+            >
+              {attribute.placeholder}
+            </div>
+            {count > 0 && (
+              <div className="flex items-center">
+                <span className="text-gray-600 mr-1">{count}</span>
+                <button
+                  className="rounded-full bg-[#086956] text-white w-5 h-5 flex items-center justify-center"
+                  onClick={() =>
+                    onRemoveAllAttributeInstances(attribute.placeholder)
+                  }
+                >
+                  <Check size={12} />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-gray-600 mb-4">
+          The recipient's attribute values will automatically populate the
+          attributes used in your credential design.
+        </p>
+
+        <div className="relative mb-6">
+          <Search
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400"
+            size={16}
+          />
+          <Input
+            placeholder="Search for attributes"
+            className="pl-8 pr-4 py-2 border border-gray-300 rounded-md w-full"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        {recipientAttributes.length > 0 && (
+          <div>
+            <h3 className="text-[#086956] font-medium border-b border-[#086956] pb-1 mb-2">
+              RECIPIENT
+            </h3>
+            {recipientAttributes.map(renderAttributeItem)}
+          </div>
+        )}
+
+        {credentialAttributes.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-[#086956] font-medium border-b border-[#086956] pb-1 mb-2">
+              CREDENTIAL
+            </h3>
+            {credentialAttributes.map(renderAttributeItem)}
+          </div>
+        )}
+
+        {issuerAttributes.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-[#086956] font-medium border-b border-[#086956] pb-1 mb-2">
+              ISSUER
+            </h3>
+            {issuerAttributes.map(renderAttributeItem)}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderContent = () => {
     switch (feature) {
       case "colorPicker":
@@ -364,6 +564,15 @@ const SidebarPanel: React.FC<SidebarPanelProps> = ({
               onClose={onCloseColorPicker}
             />
           </div>
+        );
+      case "attributes":
+        return (
+          <>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              ATTRIBUTES
+            </h2>
+            {renderAttributesPanel()}
+          </>
         );
       case "templates":
         return (
@@ -474,7 +683,7 @@ const SidebarPanel: React.FC<SidebarPanelProps> = ({
   };
 
   return (
-    <div className="w-80 border-r border-gray-200 p-6 overflow-y-auto">
+    <div className="w-80 border-r border-gray-200 p-6 overflow-y-auto max-h-[calc(100vh-5rem)]">
       {renderContent()}
     </div>
   );
