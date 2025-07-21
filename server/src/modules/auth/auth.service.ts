@@ -1,8 +1,9 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { OrganizationService } from '../organization/organization.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User, UserRole } from '../user/user.entity';
+import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private organizationService: OrganizationService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -21,13 +23,12 @@ export class AuthService {
   }
 
   async login(user: User) {
-    const payload = { email: user.email, sub: user.id, role: user.role };
+    const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
       },
     };
   }
@@ -42,16 +43,17 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
 
-    // Create user
     const user = await this.userService.create({
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
       email: createUserDto.email.toLowerCase(),
       password: hashedPassword,
-      role: UserRole.USER,
     });
 
-    // Return login response
+    await this.organizationService.createNewOrganization(user, {
+      name: `${user.firstName}'s organization`,
+    });
+
     return this.login(user);
   }
 }

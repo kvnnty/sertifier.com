@@ -1,34 +1,30 @@
-import { Entity, Column, ObjectIdColumn, Index } from 'typeorm';
-import { IsEmail, IsNotEmpty } from 'class-validator';
 import * as bcrypt from 'bcrypt';
-
-export enum UserRole {
-  ADMIN = 'admin',
-  USER = 'user',
-}
+import { TimestampAuditEntity } from 'src/common/audits/timestamp.audit';
+import {
+  Column,
+  Entity,
+  Index,
+  ObjectId,
+  ObjectIdColumn
+} from 'typeorm';
 
 @Entity('_users')
-export class User {
+export class User extends TimestampAuditEntity {
   @ObjectIdColumn()
-  id: string;
+  id: ObjectId;
 
-  @Column({ unique: true })
-  @IsNotEmpty()
+  @Column()
   firstName: string;
 
-  @Column({ unique: true })
-  @IsNotEmpty()
+  @Column()
   lastName: string;
 
   @Column({ unique: true })
-  @IsEmail()
+  @Index()
   email: string;
 
   @Column()
   password: string;
-
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
-  role: UserRole;
 
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
