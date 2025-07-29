@@ -3,8 +3,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle('My API')
-    .setDescription('API documentation for My App')
+    .setTitle('Sertifier API Documentation')
+    .setDescription('API documentation for Sertifier, a platform for managing digital credentials.')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
