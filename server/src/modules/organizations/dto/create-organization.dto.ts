@@ -60,6 +60,6 @@ export class CreateOrganizationDto {
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   createdBy: string;
 }

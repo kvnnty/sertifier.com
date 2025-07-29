@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -28,7 +29,7 @@ export class OrganizationsController {
 
   // Organization Management
   @Post()
-  create(createOrganizationDto: CreateOrganizationDto, @Request() req) {
+  create(@Body() createOrganizationDto: CreateOrganizationDto, @Request() req) {
     return this.organizationsService.create({
       ...createOrganizationDto,
       createdBy: req.user.id,

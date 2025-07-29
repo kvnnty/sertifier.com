@@ -11,9 +11,10 @@ import type { UpdateMemberPermissionsDto } from './dto/update-member-permissions
 import type { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { OrganizationMember, OrganizationMemberDocument } from './schema/organization-member.schema';
 import { Organization, OrganizationDocument } from './schema/organization.schema';
+import { UserDocument } from '../users/schemas/user.schema';
 
 export interface OrganizationMembership {
-  organization: any;
+  organization: OrganizationDocument;
   permissions: string[];
   status: string;
   joinedAt: Date;
@@ -29,6 +30,7 @@ export class OrganizationsService {
 
   // Organization CRUD Operations
   async create(createOrganizationDto: CreateOrganizationDto) {
+    // console.log()
     const existingOrg = await this.organizationModel.findOne({
       slug: this.generateSlug(createOrganizationDto.name),
     });
@@ -138,7 +140,7 @@ export class OrganizationsService {
     organizationId: string,
     inviteMemberDto: InviteMemberDto,
     invitedBy: string,
-  ): Promise<any> {
+  ): Promise<OrganizationMemberDocument> {
     // Check if user is already a member
     const existingMember = await this.organizationMemberModel.findOne({
       userId: inviteMemberDto.userId,
@@ -265,7 +267,7 @@ export class OrganizationsService {
 
   async getUserOrganizations(
     userId: string,
-  ): Promise<OrganizationMembership[]> {
+  ): Promise<any[]> {
     const memberships = await this.organizationMemberModel
       .find({ userId, status: 'active' })
       .populate('organizationId')

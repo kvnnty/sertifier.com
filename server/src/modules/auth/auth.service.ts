@@ -11,6 +11,7 @@ import { UsersService } from '../users/users.service';
 import type { LoginDto } from './dto/login.dto';
 import type { RegisterDto } from './dto/register.dto';
 import { AuthResult, JwtPayload } from './types';
+import { UserDocument } from '../users/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -48,6 +49,22 @@ export class AuthService {
     });
 
     await this.organizationsService.addAdminMember(newOrganization.id, user.id);
+    return this.buildAuthResult(user);
+  }
+
+  async login(loginDto: LoginDto): Promise<AuthResult> {
+    const user = await this.validateUser(loginDto.email, loginDto.password);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    return this.buildAuthResult(user);
+  }
+
+  private async buildAuthResult(user: UserDocument): Promise<AuthResult> {
+    // Update last login
+    await this.usersService.updateLastLogin(user.id);
 
     // Generate tokens
     const tokens = await this.generateTokens(user);
@@ -59,32 +76,10 @@ export class AuthService {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        isVerified: user.isVerified,
+        profileImage: user.profileImage,
       },
-      ...tokens,
-    };
-  }
-
-  async login(loginDto: LoginDto): Promise<AuthResult> {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    // Update last login
-    await this.usersService.updateLastLogin(user._id);
-
-    // Generate tokens
-    const tokens = await this.generateTokens(user);
-    await this.usersService.updateRefreshToken(user._id, tokens.refreshToken);
-
-    return {
-      user: {
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
-      ...tokens,
+      accessToken: tokens.accessToken,
     };
   }
 
@@ -111,7 +106,10 @@ export class AuthService {
     await this.usersService.updateRefreshToken(userId, null);
   }
 
-  public async validateUser(email: string, password: string): Promise<any> {
+  public async validateUser(
+    email: string,
+    password: string,
+  ): Promise<UserDocument> {
     const user = await this.usersService.findByEmail(email);
     if (user && (await bcrypt.compare(password, user.passwordHash))) {
       return user;
@@ -120,7 +118,7 @@ export class AuthService {
   }
 
   private async generateTokens(
-    user: any,
+    user: UserDocument,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload: JwtPayload = {
       sub: user.id,

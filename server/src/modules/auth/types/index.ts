@@ -1,8 +1,8 @@
+import { User, UserDocument } from "@/modules/users/schemas/user.schema";
 
 export interface AuthResult {
   user: any;
   accessToken: string;
-  refreshToken: string;
 }
 
 export interface JwtPayload {
