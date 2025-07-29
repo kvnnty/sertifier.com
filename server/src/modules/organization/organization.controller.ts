@@ -1,59 +1,59 @@
 import {
   Body,
   Controller,
-  Delete,
-  Get,
   Param,
   Post,
-  Put,
-  UsePipes,
-  ValidationPipe,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import {
-  CreateOrganizationDto,
-  UpdateOrganizationDto,
-} from './dto/organization.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { CreateOrganizationDto } from './dto/organization.dto';
+import { UserPermissions } from './enums/user-permissions.enum';
 import { OrganizationService } from './organization.service';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { User } from '../user/user.entity';
 
 @Controller('organizations')
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  @UsePipes(new ValidationPipe({ whitelist: true }))
-  create(
-    @CurrentUser() user: User,
+  async create(
+    @Request() req,
     @Body() createOrganizationDto: CreateOrganizationDto,
   ) {
     return this.organizationService.createNewOrganization(
-      user,
+      req.user,
       createOrganizationDto,
     );
   }
 
-  @Get()
-  findAll() {
-    return this.organizationService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.organizationService.findOne(id);
-  }
-
-  @Put(':id')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
-  update(
-    @Param('id') id: string,
-    @Body() updateOrganizationDto: UpdateOrganizationDto,
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/invite')
+  async invite(
+    @Request() req,
+    @Param('id') organizationId: string,
+    @Body('email') email: string,
+    @Body('permissions') permissions: UserPermissions[],
   ) {
-    return this.organizationService.update(id, updateOrganizationDto);
+    return this.organizationService.inviteUserToOrganization(
+      req.user,
+      organizationId,
+      email,
+      permissions,
+    );
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.organizationService.remove(id);
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/join/:invitationId')
+  async join(
+    @Request() req,
+    @Param('id') organizationId: string,
+    @Param('invitationId') invitationId: string,
+  ) {
+    return this.organizationService.addUserToOrganization(
+      req.user,
+      organizationId,
+      invitationId,
+    );
   }
 }
