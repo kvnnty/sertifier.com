@@ -1,29 +1,26 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { databaseConfig } from './config/database.config';
 import { AuthModule } from './modules/auth/auth.module';
-import { CertificateTemplateModule } from './modules/certificate-template/certificate-template.module';
-import { CredentialModule } from './modules/credential/credential.module';
-import { OrganizationModule } from './modules/organization/organization.module';
-import { UserModule } from './modules/user/user.module';
+import { CredentialsModule } from './modules/credentials/credentials.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
+import { TemplatesModule } from './modules/templates/templates.module';
+import { UsersModule } from './modules/users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('DATABASE_URI'),
-      }),
-      inject: [ConfigService],
-    }),
-    UserModule,
+    MongooseModule.forRootAsync(databaseConfig),
     AuthModule,
-    OrganizationModule,
-    CertificateTemplateModule,
-    CredentialModule,
+    UsersModule,
+    OrganizationsModule,
+    CredentialsModule,
+    TemplatesModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

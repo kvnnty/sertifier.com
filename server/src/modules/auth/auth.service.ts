@@ -1,67 +1,142 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { OrganizationService } from '../organization/organization.service';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User } from '../user/schemas/user.schema';
-import { UserService } from '../user/user.service';
+import { OrganizationsService } from '../organizations/organizations.service';
+import { UsersService } from '../users/users.service';
+import type { LoginDto } from './dto/login.dto';
+import type { RegisterDto } from './dto/register.dto';
+import { AuthResult, JwtPayload } from './types';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
+    private usersService: UsersService,
+    private organizationsService: OrganizationsService,
     private jwtService: JwtService,
-    private organizationService: OrganizationService,
+    private configService: ConfigService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userService.findByEmail(email.toLowerCase());
-    if (user && (await bcrypt.compare(password, user.password))) {
+  async register(registerDto: RegisterDto): Promise<AuthResult> {
+    // Check if user already exists
+    const existingUser = await this.usersService.findByEmail(registerDto.email);
+    if (existingUser) {
+      throw new ConflictException(
+        'This email is already in use, kindly enter another one.',
+      );
+    }
+
+    // Create user
+    const user = await this.usersService.create(
+      {
+        email: registerDto.email,
+        firstName: registerDto.firstName,
+        lastName: registerDto.lastName,
+      },
+      registerDto.password,
+    );
+
+    // Create default organization for new user
+    const newOrganization = await this.organizationsService.create({
+      name: `${user.firstName}'s Organization`,
+      contactInfo: { email: registerDto.email },
+      createdBy: user.id,
+    });
+
+    await this.organizationsService.addAdminMember(newOrganization.id, user.id);
+
+    // Generate tokens
+    const tokens = await this.generateTokens(user);
+    await this.usersService.updateRefreshToken(user.id, tokens.refreshToken);
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+      ...tokens,
+    };
+  }
+
+  async login(loginDto: LoginDto): Promise<AuthResult> {
+    const user = await this.validateUser(loginDto.email, loginDto.password);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Update last login
+    await this.usersService.updateLastLogin(user._id);
+
+    // Generate tokens
+    const tokens = await this.generateTokens(user);
+    await this.usersService.updateRefreshToken(user._id, tokens.refreshToken);
+
+    return {
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+      ...tokens,
+    };
+  }
+
+  async refreshTokens(
+    userId: string,
+    refreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const isValid = await this.usersService.validateRefreshToken(
+      userId,
+      refreshToken,
+    );
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const user = await this.usersService.findById(userId);
+    const tokens = await this.generateTokens(user);
+    await this.usersService.updateRefreshToken(userId, tokens.refreshToken);
+
+    return tokens;
+  }
+
+  async logout(userId: string): Promise<void> {
+    await this.usersService.updateRefreshToken(userId, null);
+  }
+
+  public async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findByEmail(email);
+    if (user && (await bcrypt.compare(password, user.passwordHash))) {
       return user;
     }
     return null;
   }
 
-  async login(user: User) {
-    const payload = { email: user.email, sub: user._id.toString() };
-    return {
-      access_token: this.jwtService.sign(payload),
-      user: {
-        id: user._id.toString(),
-        email: user.email,
-      },
+  private async generateTokens(
+    user: any,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
     };
-  }
 
-  async register(createUserDto: CreateUserDto) {
-    const existingUser = await this.userService.findByEmail(
-      createUserDto.email.toLowerCase(),
-    );
-    if (existingUser) {
-      throw new ConflictException('Email already exists');
-    }
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload),
+      this.jwtService.signAsync(payload, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+      }),
+    ]);
 
-    const hashedPassword = await bcrypt.hash(
-      createUserDto.password,
-      parseInt(process.env.BCRYPT_SALT_ROUNDS || '12', 10),
-    );
-
-    const user = await this.userService.create({
-      firstName: createUserDto.firstName,
-      lastName: createUserDto.lastName,
-      email: createUserDto.email.toLowerCase(),
-      password: hashedPassword,
-    });
-
-    try {
-      await this.organizationService.createNewOrganization(user, {
-        name: `${user.firstName}'s organization`,
-      });
-    } catch (error) {
-      await this.userService.deleteById(user._id.toString());
-      throw new ConflictException('Failed to create organization');
-    }
-
-    return this.login(user);
+    return { accessToken, refreshToken };
   }
 }
