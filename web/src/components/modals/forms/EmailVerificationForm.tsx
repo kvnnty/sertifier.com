@@ -3,6 +3,7 @@
 import Spinner from "@/components/loaders/Spinner";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import axiosClient from "@/config/axios.config";
+import { useAuthModal } from "@/context/AuthModalContext";
 import { useAuth } from "@/lib/store/features/auth/auth.selector";
 import { login, updateUser } from "@/lib/store/features/auth/auth.slice";
 import { useRouter } from "next/navigation";
@@ -24,6 +25,7 @@ export default function EmailVerificationForm({ email }: EmailVerificationFormPr
   const { isLoggedIn, currentUser } = useAuth();
   const dispatch = useDispatch();
   const router = useRouter();
+  const { closeAuthModal } = useAuthModal();
 
   if (isLoggedIn && !!currentUser) {
     email = currentUser.email;
@@ -79,11 +81,14 @@ export default function EmailVerificationForm({ email }: EmailVerificationFormPr
 
       if (isLoggedIn) {
         dispatch(updateUser({ isVerified: true }));
+        closeAuthModal();
       } else {
         const { user, accessToken } = response.data;
         dispatch(login({ user, accessToken }));
+        closeAuthModal();
         router.push("/portal/user");
       }
+      
     } catch (error: any) {
       toast.error(error.response.data.message || "Error verifying OTP");
     } finally {
@@ -95,9 +100,7 @@ export default function EmailVerificationForm({ email }: EmailVerificationFormPr
     <div className="w-full space-y-5 py-10">
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold text-center">Verify your email</h1>
-        <p className="text-[#454C52] text-center text-[16px]">
-          A 5-digit verification code has been sent to your email. Please use it to complete the verification process.
-        </p>
+        <p className="text-[#454C52] text-center text-[16px]">A 5-digit verification code has been sent to your email. Please use it to verify your account.</p>
       </div>
 
       <div className="space-y-2 flex justify-center">

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -120,6 +121,10 @@ export class AuthService {
   async resendOtp(dto: ResendOtpDto): Promise<void> {
     const { email, purpose } = dto;
     const user = await this.findUserByEmail(email);
+
+    if (user.isVerified && purpose === 'email_verification')
+      throw new ForbiddenException('Account is already verified');
+
     await this.sendOtpEmail(user, purpose);
   }
 
@@ -170,7 +175,7 @@ export class AuthService {
     if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
       throw new BadRequestException('Invalid credentials');
     }
-    
+
     return user;
   }
 
@@ -240,7 +245,7 @@ export class AuthService {
     switch (purpose) {
       case 'email_verification':
         if (!user.isVerified) {
-          await this.usersService.markEmailAsVerified(user.id);
+          user = await this.usersService.markEmailAsVerified(user.id);
         }
         return this.buildAuthResult(user, res);
 

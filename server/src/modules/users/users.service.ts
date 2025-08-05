@@ -117,10 +117,14 @@ export class UsersService {
   }
 
   async markEmailAsVerified(userId: string) {
-    await this.userModel.findByIdAndUpdate(userId, {
-      isVerified: true,
-      emailVerifiedAt: new Date(),
-    });
+    return await this.userModel.findByIdAndUpdate(
+      userId,
+      {
+        isVerified: true,
+        emailVerifiedAt: new Date(),
+      },
+      { new: true },
+    );
   }
 
   async updateLastLogin(userId: string): Promise<void> {

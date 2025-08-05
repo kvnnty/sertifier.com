@@ -3,6 +3,7 @@
 import Spinner from "@/components/loaders/Spinner";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import axiosClient from "@/config/axios.config";
+import { useAuthModal } from "@/context/AuthModalContext";
 import { useAuth } from "@/lib/store/features/auth/auth.selector";
 import { login } from "@/lib/store/features/auth/auth.slice";
 import { useRouter } from "next/navigation";
@@ -24,6 +25,7 @@ export default function LoginVerificationForm({ email }: LoginVerificationFormPr
   const { isLoggedIn, currentUser } = useAuth();
   const dispatch = useDispatch();
   const router = useRouter();
+  const { closeAuthModal } = useAuthModal();
 
   if (isLoggedIn && !!currentUser) {
     email = currentUser.email;
@@ -78,6 +80,7 @@ export default function LoginVerificationForm({ email }: LoginVerificationFormPr
       toast.success("Signed in successfully", {
         description: `Welcome back, ${user.firstName}`,
       });
+      closeAuthModal();
       router.push("/portal/user");
     } catch (error: any) {
       toast.error(error.response.data.message || "Error verifying OTP");
