@@ -1,7 +1,7 @@
+import GlobalApplicationProvider from "@/providers/GlobalApplicationProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Provider from "./provider";
+import "../styles/globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Sertifier",
-  description: "Sertifier",
+  description: "Digital credentialing platform issuing verified certificates and badges for organizations.",
 };
 
 export default function RootLayout({
@@ -25,12 +25,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Provider>
-          {children}
-        </Provider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <GlobalApplicationProvider>{children}</GlobalApplicationProvider>
       </body>
     </html>
   );

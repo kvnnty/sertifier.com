@@ -9,9 +9,14 @@ import type { CreateOrganizationDto } from './dto/create-organization.dto';
 import type { InviteMemberDto } from './dto/invite-member.dto';
 import type { UpdateMemberPermissionsDto } from './dto/update-member-permissions.dto';
 import type { UpdateOrganizationDto } from './dto/update-organization.dto';
-import { OrganizationMember, OrganizationMemberDocument } from './schema/organization-member.schema';
-import { Organization, OrganizationDocument } from './schema/organization.schema';
-import { UserDocument } from '../users/schemas/user.schema';
+import {
+  OrganizationMember,
+  OrganizationMemberDocument,
+} from './schema/organization-member.schema';
+import {
+  Organization,
+  OrganizationDocument,
+} from './schema/organization.schema';
 
 export interface OrganizationMembership {
   organization: OrganizationDocument;
@@ -24,27 +29,27 @@ export interface OrganizationMembership {
 @Injectable()
 export class OrganizationsService {
   constructor(
-    @InjectModel(Organization.name) private organizationModel: Model<OrganizationDocument>,
-    @InjectModel(OrganizationMember.name) private organizationMemberModel: Model<OrganizationMemberDocument>,
+    @InjectModel(Organization.name)
+    private organizationModel: Model<OrganizationDocument>,
+    @InjectModel(OrganizationMember.name)
+    private organizationMemberModel: Model<OrganizationMemberDocument>,
   ) {}
 
-  // Organization CRUD Operations
   async create(createOrganizationDto: CreateOrganizationDto) {
-    // console.log()
-    const existingOrg = await this.organizationModel.findOne({
-      slug: this.generateSlug(createOrganizationDto.name),
-    });
+    let slug: string;
+    let exists: boolean;
 
-    if (existingOrg) {
-      throw new ConflictException('Organization with this name already exists');
-    }
+    do {
+      slug = this.generateSlug(createOrganizationDto.name);
+      exists = !!(await this.organizationModel.findOne({ slug }));
+    } while (exists);
 
-    const organization = new this.organizationModel({
+    const organization = await new this.organizationModel({
       ...createOrganizationDto,
       slug: this.generateSlug(createOrganizationDto.name),
-    });
+    }).save();
 
-    return organization.save();
+    await this.addAdminMember(organization.id, createOrganizationDto.createdBy);
   }
 
   async findAll(
@@ -56,7 +61,6 @@ export class OrganizationsService {
     const [organizations, total] = await Promise.all([
       this.organizationModel
         .find({ isActive: true })
-        .populate('createdBy', 'firstName lastName email')
         .skip(skip)
         .limit(limit)
         .sort({ createdAt: -1 })
@@ -265,29 +269,27 @@ export class OrganizationsService {
     return permissions.includes(permission) || permissions.includes('*');
   }
 
-  async getUserOrganizations(
-    userId: string,
-  ): Promise<any[]> {
+  async getUserOrganizations(userId: string) {
     const memberships = await this.organizationMemberModel
       .find({ userId, status: 'active' })
       .populate('organizationId')
       .sort({ joinedAt: -1 });
 
-    return memberships.map((membership) => ({
-      organization: membership.organizationId,
-      permissions: membership.permissions,
-      status: membership.status,
-      joinedAt: membership.joinedAt,
-      metadata: membership.metadata,
-    }));
+    const organizations = memberships.map((m) => m.organizationId);
+
+    return organizations;
   }
 
   // Utility Methods
   private generateSlug(name: string): string {
-    return name
+    const baseSlug = name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
+
+    const randomDigits = Math.floor(1000 + Math.random() * 9000);
+
+    return `${baseSlug}-${randomDigits}`;
   }
 
   // Analytics and Statistics
@@ -295,8 +297,14 @@ export class OrganizationsService {
     const [totalMembers, activeMembers, pendingInvitations] = await Promise.all(
       [
         this.organizationMemberModel.countDocuments({ organizationId }),
-        this.organizationMemberModel.countDocuments({ organizationId, status: 'active' }),
-        this.organizationMemberModel.countDocuments({ organizationId, status: 'pending' }),
+        this.organizationMemberModel.countDocuments({
+          organizationId,
+          status: 'active',
+        }),
+        this.organizationMemberModel.countDocuments({
+          organizationId,
+          status: 'pending',
+        }),
       ],
     );
 

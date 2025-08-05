@@ -33,7 +33,6 @@ export class UsersController {
   @Get('me')
   async getCurrentUser(@Request() req) {
     const user = await this.usersService.findById(req.user.id);
-    // You might want to include user's organizations here
     return user;
   }
 

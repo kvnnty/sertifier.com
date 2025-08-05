@@ -5,39 +5,51 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Model, Types } from 'mongoose';
+import { OrganizationsService } from '../organizations/organizations.service';
+import { UpdateUserDto, UserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    private organizationsService: OrganizationsService,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+  ) {}
 
-  async create(createUserDto: CreateUserDto, password?: string) {
+  async createNewUser(newUser: UserDto) {
     const existingUser = await this.userModel.findOne({
-      email: createUserDto.email,
+      email: newUser.email,
     });
 
     if (existingUser) {
       throw new ConflictException(
-        'This email is already in use, kindly enter another one.',
+        'This email is already in use. Try another or log in.',
       );
     }
 
+    const { password, ...rest } = newUser;
+
     const passwordHash = password ? await bcrypt.hash(password, 12) : undefined;
 
-    const user = new this.userModel({
-      ...createUserDto,
+    const savedUser = await new this.userModel({
+      ...rest,
       passwordHash,
       preferences: {
         emailNotifications: true,
         language: 'en',
         timezone: 'UTC',
       },
+    }).save();
+
+    // Automatically create an organization for the user
+    await this.organizationsService.create({
+      name: `${savedUser.firstName}'s Organization`,
+      contactInfo: { email: savedUser.email },
+      createdBy: savedUser.id,
     });
 
-    return user.save();
+    return savedUser;
   }
 
   async findAll(
@@ -62,13 +74,13 @@ export class UsersService {
   async findById(id: string): Promise<UserDocument> {
     const user = await this.userModel.findById(id);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('This account does not exist');
     }
     return user;
   }
 
   async findByEmail(email: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ email, isVerified: true });
+    return this.userModel.findOne({ email });
   }
 
   async update(
@@ -81,7 +93,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('This account does not exist');
     }
 
     return user;
@@ -95,34 +107,23 @@ export class UsersService {
     );
 
     if (!result) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('This account does not exist');
     }
   }
 
-  async updateLastLogin(id: string): Promise<void> {
-    await this.userModel.findByIdAndUpdate(id, { lastLoginAt: new Date() });
+  async updatePassword(userId: string, password: string) {
+    const passwordHash = await bcrypt.hash(password, 12);
+    await this.userModel.findByIdAndUpdate(userId, { passwordHash });
   }
 
-  async updateRefreshToken(
-    id: string,
-    refreshToken: string | null,
-  ): Promise<void> {
-    const hashedRefreshToken = refreshToken
-      ? await bcrypt.hash(refreshToken, 12)
-      : null;
-    await this.userModel.findByIdAndUpdate(id, {
-      refreshToken: hashedRefreshToken,
+  async markEmailAsVerified(userId: string) {
+    await this.userModel.findByIdAndUpdate(userId, {
+      isVerified: true,
+      emailVerifiedAt: new Date(),
     });
   }
 
-  async validateRefreshToken(
-    id: string,
-    refreshToken: string,
-  ): Promise<boolean> {
-    const user = await this.userModel.findById(id);
-    if (!user || !user.refreshToken) {
-      return false;
-    }
-    return bcrypt.compare(refreshToken, user.refreshToken);
+  async updateLastLogin(userId: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(userId, { lastLoginAt: new Date() });
   }
 }

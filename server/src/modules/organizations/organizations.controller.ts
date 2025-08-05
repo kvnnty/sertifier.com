@@ -27,7 +27,6 @@ import { OrganizationsService } from '../organizations/organizations.service';
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
-  // Organization Management
   @Post()
   create(@Body() createOrganizationDto: CreateOrganizationDto, @Request() req) {
     return this.organizationsService.create({
@@ -42,6 +41,14 @@ export class OrganizationsController {
     @Query('limit') limit: string = '10',
   ) {
     return this.organizationsService.findAll(+page, +limit);
+  }
+
+  @Get('/me')
+  async getCurrentUserOrganizations(@Request() req) {
+    const organizations = await this.organizationsService.getUserOrganizations(
+      req.user.id,
+    );
+    return { organizations };
   }
 
   @Get(':id')

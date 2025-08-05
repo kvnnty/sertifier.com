@@ -10,7 +10,7 @@ export class User {
   @Prop({ required: true, unique: true, lowercase: true })
   email: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   passwordHash: string;
 
   @Prop({ required: true, trim: true })
@@ -22,8 +22,11 @@ export class User {
   @Prop()
   profileImage?: string;
 
-  @Prop({ default: true })
+  @Prop({ default: false })
   isVerified: boolean;
+
+  @Prop({ default: 'local' })
+  authProvider: 'local' | 'google';
 
   @Prop()
   lastLoginAt?: Date;
@@ -34,18 +37,6 @@ export class User {
     language: string;
     timezone: string;
   };
-
-  @Prop()
-  emailVerifiedAt?: Date;
-
-  @Prop()
-  phoneNumber?: string;
-
-  @Prop()
-  phoneVerifiedAt?: Date;
-
-  @Prop()
-  refreshToken?: string;
 
   // Virtual field for full name
   get fullName(): string {
@@ -65,7 +56,6 @@ UserSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
     delete ret.passwordHash;
-    delete ret.refreshToken;
     delete ret.__v;
     return ret;
   },

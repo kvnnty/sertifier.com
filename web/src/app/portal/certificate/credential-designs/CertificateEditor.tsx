@@ -4,8 +4,8 @@ import DynamicTopbar from "../../../../components/custom/portal/certificate/cred
 import SidebarPanel, {
   CERTIFICATE_SIZES,
 } from "../../../../components/custom/portal/certificate/credentialDesigns/sidebar";
-import { useCertificateState } from "@/app/hooks/useCertificates";
-import { useCanvasInteraction } from "@/app/hooks/useCanvasInteraction";
+import { useCertificateState } from "@/hooks/useCertificates";
+import { useCanvasInteraction } from "@/hooks/useCanvasInteraction";
 import { findElementAtPosition } from "@/lib/utils/canvasUtils";
 import CertificateSideBar from "@/components/custom/portal/certificate/SideBar";
 import { useState } from "react";

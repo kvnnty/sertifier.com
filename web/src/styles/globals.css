@@ -127,6 +127,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -153,14 +154,14 @@
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
   }
-  
+
   button {
     scroll-snap-align: start;
   }
 }
 
-.font-global{
-   font-family:  googleSans, Roboto, sans-serif;
+.font-global {
+  font-family: googleSans, Roboto, sans-serif;
 }
 
 

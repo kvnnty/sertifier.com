@@ -1,73 +1,155 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Form } from "@/components/ui/form";
+import axiosClient from "@/config/axios.config";
+import { useAuthModal } from "@/context/AuthModalContext";
+import { BASE_API_URL } from "@/lib/api/urls";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { useForm } from "react-hook-form";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
+// Validation schema
+const signupSchema = z.object({
+  firstName: z.string().min(2, { message: "First name must be at least 2 characters long" }),
+  lastName: z.string().min(2, { message: "Last name must be at least 2 characters long" }),
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
+});
+
+type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
-  const form = useForm({
+  const { openAuthModal } = useAuthModal();
+
+  const form = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: SignupFormValues) => {
+    try {
+      const response = await axiosClient.post("/auth/register", {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+      });
+
+      toast.success("Verification required!", {
+        description: response.data.message,
+      });
+
+      openAuthModal("email_verification", { email: data.email });
+      
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "An error occurred during registration";
+      toast.error("Sign up failed", {
+        description: errorMessage,
+      });
+    }
   };
 
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
       {/* Left: Signup Form */}
       <div className="flex-1 flex flex-col justify-center px-8 md:px-24 lg:px-32 bg-white">
-        <h1 className="text-3xl md:text-4xl font-serif mb-8 text-gray-900">
-          Sign up for the Leading Digital Credentialing Platform
-        </h1>
+        <h1 className="text-3xl md:text-4xl font-serif mb-8 text-gray-900">Sign up for the Leading Digital Credentialing Platform</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid w-full gap-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-              required
-                id="name"
-                type="text"
-                placeholder="Enter your full name"
-                className="py-6 focus:outline-none outline-none border border-gray-300"
-                {...form.register("name", { required: true })}
+            <div className="flex gap-3">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <FormControl>
+                      <Input
+                        id="firstName"
+                        type="text"
+                        placeholder="Enter your first name"
+                        className="py-6 focus:outline-none outline-none border border-gray-300"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <FormControl>
+                      <Input
+                        id="lastName"
+                        type="text"
+                        placeholder="Enter your last name"
+                        className="py-6 focus:outline-none outline-none border border-gray-300"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-            <div className="grid w-full gap-2">
-              <Label htmlFor="email">Email address</Label>
-              <Input
-              required
-                id="email"
-                type="email"
-                placeholder="Enter your work email address"
-                className="py-6 focus:outline-none outline-none border border-gray-300"
-                {...form.register("email", { required: true })}
-              />
-            </div>
-            <div className="grid w-full gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-              required
-                id="password"
-                type="password"
-                placeholder="Create a password"
-                className="py-6 focus:outline-none outline-none border border-gray-300"
-                {...form.register("password", { required: true })}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor="email">Email address</Label>
+                  <FormControl>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your work email address"
+                      className="py-6 focus:outline-none outline-none border border-gray-300"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor="password">Password</Label>
+                  <FormControl>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Create a password"
+                      className="py-6 focus:outline-none outline-none border border-gray-300"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button
               type="submit"
               className="hover:cursor-pointer w-full py-6 text-lg font-medium bg-green-900 hover:bg-green-800"
-            >
-              Sign Up
+              disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "Signing up..." : "Sign Up"}
             </Button>
           </form>
         </Form>
@@ -77,18 +159,15 @@ export default function SignupPage() {
           <div className="flex-1 h-px bg-gray-200" />
         </div>
         <Button
+          onClick={() => (window.location.href = `${BASE_API_URL}/auth/google`)}
           variant="outline"
-          className="flex items-center justify-center gap-6 hover:cursor-pointer w-full border border-gray-300 rounded py-5 text-lg font-medium hover:bg-gray-50 transition"
-        >
+          className="flex items-center justify-center gap-6 hover:cursor-pointer w-full border border-gray-300 rounded py-5 text-lg font-medium hover:bg-gray-50 transition">
           <Image src="/icons/google.svg" alt="Google" width={24} height={24} />
           Sign up with Google
         </Button>
         <div className="mt-6 text-center text-gray-700">
           Already have an account?{" "}
-          <Link
-            href="/auth/login"
-            className="text-green-900 font-medium hover:underline"
-          >
+          <Link href="/auth/login" className="text-green-900 font-medium hover:underline">
             Sign in
           </Link>
         </div>
@@ -98,20 +177,13 @@ export default function SignupPage() {
       <div className="hidden lg:flex flex-col justify-center items-center flex-1 bg-green-900 relative">
         <div className="bg-white rounded-xl p-8 shadow-lg mb-8 w-[32rem] max-w-full">
           <div className="h-[300px]">
-            <Image
-              src="/images/companies.png"
-              alt="companies"
-              width={1000}
-              height={1000}
-            />
+            <Image src="/images/companies.png" alt="companies" width={1000} height={1000} />
           </div>
         </div>
         <div className="flex flex-col items-center">
           <div className="bg-white rounded-xl px-8 py-4 shadow-lg flex items-center text-2xl font-serif">
             <span className="text-green-900 mr-2">You are in</span>
-            <span className="bg-green-200 text-green-900 px-2 rounded">
-              good company
-            </span>
+            <span className="bg-green-200 text-green-900 px-2 rounded">good company</span>
             <span className="text-green-900 ml-2">.</span>
           </div>
         </div>

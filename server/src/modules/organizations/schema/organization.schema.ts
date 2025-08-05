@@ -73,14 +73,3 @@ export const OrganizationSchema = SchemaFactory.createForClass(Organization);
 OrganizationSchema.index({ slug: 1 }, { unique: true });
 OrganizationSchema.index({ createdBy: 1 });
 OrganizationSchema.index({ isActive: 1 });
-
-// Pre-save middleware to generate slug
-OrganizationSchema.pre('save', function (next) {
-  if (this.isModified('name') || this.isNew) {
-    this.slug = this.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  }
-  next();
-});

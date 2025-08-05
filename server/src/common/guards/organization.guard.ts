@@ -23,7 +23,7 @@ export class OrganizationGuard implements CanActivate {
     const userOrganizations =
       await this.organizationsService.getUserOrganizations(user.id);
     const isMember = userOrganizations.some(
-      (membership) => membership.organization._id.toString() === organizationId,
+      (org) => org._id.toString() === organizationId,
     );
 
     if (!isMember) {

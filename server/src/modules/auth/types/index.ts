@@ -1,4 +1,3 @@
-import { User, UserDocument } from "@/modules/users/schemas/user.schema";
 
 export interface AuthResult {
   user: any;
