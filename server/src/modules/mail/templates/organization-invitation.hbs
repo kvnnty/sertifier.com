@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <p>Hello {{memberName}},</p>
+
+  <p>
+    You are receiving this email because you have been invited to join <strong>{{organizationName}}</strong> on
+    Sertifer by {{inviterName}}. This invitation will expire in 7 days.
+  </p>
+
+  <p>
+    To accept the invitation, click the link below:
+  </p>
+
+  <p>
+    <a href="{{inviteLink}}">Accept invitation</a>
+  </p>
+
+
+  <p>If the button doesn't work, please copy and paste the URL provided below to your web browser.</p>
+  
+  <a href="{{inviteLink}}">{{inviteLink}}</a>
+
+  <p>
+    If you did not expect this invitation, you can ignore this email.
+  </p>
+  
+  <p>
+    Best regards,<br />
+    — The Sertifer Team
+  </p>
+</body>
+
+</html>

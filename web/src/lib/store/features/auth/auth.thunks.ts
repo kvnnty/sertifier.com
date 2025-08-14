@@ -1,8 +1,8 @@
 import axiosClient from "@/config/axios.config";
-import { IUser } from "@/types/user";
+import { User } from "@/types/user";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const fetchCurrentUser = createAsyncThunk<IUser, void, { rejectValue: string }>("auth/fetchCurrentUser", async (_, { rejectWithValue }) => {
+export const fetchCurrentUser = createAsyncThunk<User, void, { rejectValue: string }>("auth/fetchCurrentUser", async (_, { rejectWithValue }) => {
   try {
     const response = await axiosClient.get("/users/me");
     return response.data;

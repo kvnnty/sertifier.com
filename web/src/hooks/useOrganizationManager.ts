@@ -1,7 +1,7 @@
 import { AppDispatch } from "@/lib/store";
 import { setCurrentOrganization } from "@/lib/store/features/organization/organization.slice";
 import { fetchOrganizations } from "@/lib/store/features/organization/organization.thunks";
-import { IOrganization } from "@/types/organization";
+import { Organization } from "@/types/organization";
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 
@@ -13,7 +13,7 @@ export const useOrganizationManager = () => {
   }, [dispatch]);
 
   const selectOrganization = useCallback(
-    (org: IOrganization) => {
+    (org: Organization) => {
       dispatch(setCurrentOrganization(org));
     },
     [dispatch]

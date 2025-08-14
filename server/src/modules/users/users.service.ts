@@ -1,11 +1,13 @@
 import {
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { UpdateUserDto, UserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
@@ -13,6 +15,7 @@ import { User, UserDocument } from './schemas/user.schema';
 @Injectable()
 export class UsersService {
   constructor(
+    @Inject(forwardRef(() => OrganizationsService))
     private organizationsService: OrganizationsService,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}

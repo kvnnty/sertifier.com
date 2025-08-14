@@ -4,14 +4,16 @@ import {
   IsOptional,
   IsObject,
   IsArray,
+  IsEmail,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class InviteMemberDto {
   @ApiProperty()
   @IsString()
+  @IsEmail()
   @IsNotEmpty()
-  userId: string;
+  email: string;
 
   @ApiProperty({
     example: ['credentials.create', 'credentials.read', 'templates.read'],

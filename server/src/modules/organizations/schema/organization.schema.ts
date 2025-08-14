@@ -8,7 +8,7 @@ export class Organization {
   @Prop({ required: true, trim: true })
   name: string;
 
-  @Prop({ required: true, unique: true, lowercase: true })
+  @Prop({ required: true, unique: true, lowercase: true, index: true })
   slug: string;
 
   @Prop({ trim: true })
@@ -70,6 +70,5 @@ export class Organization {
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
 
 // Add indexes
-OrganizationSchema.index({ slug: 1 }, { unique: true });
 OrganizationSchema.index({ createdBy: 1 });
 OrganizationSchema.index({ isActive: 1 });

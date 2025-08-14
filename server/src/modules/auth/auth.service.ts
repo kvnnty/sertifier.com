@@ -36,7 +36,7 @@ const COOKIE_CONFIG = {
 const EMAIL_SUBJECTS = {
   email_verification:
     'Welcome to Sertifier | Verify your email to complete your registration',
-  login_verification: 'Sertifier | Verify your login',
+  login_verification: 'Sertifier | Welcome back',
   password_reset: 'Sertifier | Reset your password',
 } as const;
 
@@ -111,7 +111,7 @@ export class AuthService {
     const user = await this.findUserByEmail(email);
     await this.otpService.validateOtp(user.id, code, purpose);
 
-    return this.handleOtpVerification(user, purpose, res);
+    return this.handleOtpVerificationSuccess(user, purpose, res);
   }
 
   async logout(res: Response): Promise<void> {
@@ -237,7 +237,7 @@ export class AuthService {
     );
   }
 
-  private async handleOtpVerification(
+  private async handleOtpVerificationSuccess(
     user: UserDocument,
     purpose: OtpPurpose,
     res: Response,

@@ -1,11 +1,10 @@
-
-export interface IUserPreferences {
+export interface UserPreferences {
   emailNotifications: boolean;
   language: string;
   timezone: string;
 }
 
-export interface IUser {
+export interface User {
   _id: string;
   email: string;
   passwordHash: string;
@@ -14,7 +13,7 @@ export interface IUser {
   profileImage?: string;
   isVerified: boolean;
   lastLoginAt?: Date;
-  preferences?: IUserPreferences;
+  preferences?: UserPreferences;
   emailVerifiedAt?: Date;
   phoneNumber?: string;
   phoneVerifiedAt?: Date;

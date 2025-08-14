@@ -12,12 +12,12 @@ export class OrganizationMember {
   organizationId: Types.ObjectId;
 
   @Prop({ type: [String], required: true })
-  permissions: string[]; // Direct permission assignment
+  permissions: string[];
 
   @Prop({
     type: String,
     enum: ['active', 'pending', 'suspended', 'left'],
-    default: 'active',
+    default: 'pending',
   })
   status: string;
 
@@ -34,23 +34,13 @@ export class OrganizationMember {
   leftAt?: Date;
 
   @Prop({ type: Object })
-  metadata?: {
-    department?: string;
-    jobTitle?: string;
-    notes?: string;
-    displayRole?: string; // Optional: for UI display like "Manager", "Admin"
-  };
+  metadata?: Record<string, any>;
 }
 
 export const OrganizationMemberSchema =
   SchemaFactory.createForClass(OrganizationMember);
 
-// Compound unique index
 OrganizationMemberSchema.index(
   { userId: 1, organizationId: 1 },
   { unique: true },
 );
-
-// Other indexes
-OrganizationMemberSchema.index({ organizationId: 1, status: 1 });
-OrganizationMemberSchema.index({ userId: 1, status: 1 });
