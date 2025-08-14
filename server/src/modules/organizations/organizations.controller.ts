@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   Request,
   UseGuards,
@@ -21,6 +22,7 @@ import { InviteMemberDto } from '../organizations/dto/invite-member.dto';
 import { UpdateMemberPermissionsDto } from '../organizations/dto/update-member-permissions.dto';
 import { UpdateOrganizationDto } from '../organizations/dto/update-organization.dto';
 import { OrganizationsService } from '../organizations/organizations.service';
+import { Public } from '@/common/decorators/public.decorator';
 
 @Controller('organizations')
 @UseGuards(JwtAuthGuard)
@@ -43,7 +45,7 @@ export class OrganizationsController {
     return this.organizationsService.findAll(+page, +limit);
   }
 
-  @Get('/me')
+  @Get('/my-organizations')
   async getCurrentUserOrganizations(@Request() req) {
     const organizations = await this.organizationsService.getUserOrganizations(
       req.user.id,
@@ -53,8 +55,8 @@ export class OrganizationsController {
 
   @Get(':id')
   @UseGuards(OrganizationGuard)
-  findOne(@Param('id') id: string) {
-    return this.organizationsService.findOne(id);
+  findById(@Param('id') id: string) {
+    return this.organizationsService.findById(id);
   }
 
   @Get('slug/:slug')
@@ -62,14 +64,11 @@ export class OrganizationsController {
     return this.organizationsService.findBySlug(slug);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(OrganizationGuard, PermissionGuard)
   @RequirePermissions('organization.update')
-  update(
-    @Param('id') id: string,
-    updateOrganizationDto: UpdateOrganizationDto,
-  ) {
-    return this.organizationsService.update(id, updateOrganizationDto);
+  update(@Param('id') id: string, @Body() dto: UpdateOrganizationDto) {
+    return this.organizationsService.update(id, dto);
   }
 
   @Delete(':id')
@@ -86,7 +85,7 @@ export class OrganizationsController {
   @RequirePermissions('members.invite')
   inviteMember(
     @Param('id') organizationId: string,
-    inviteMemberDto: InviteMemberDto,
+    @Body() inviteMemberDto: InviteMemberDto,
     @Request() req,
   ) {
     return this.organizationsService.inviteMember(
@@ -96,13 +95,11 @@ export class OrganizationsController {
     );
   }
 
-  @Post(':id/members/accept')
+  @Post('/accept-invite')
   @UseGuards(OrganizationGuard)
-  acceptInvitation(@Param('id') organizationId: string, @Request() req) {
-    return this.organizationsService.acceptInvitation(
-      req.user.id,
-      organizationId,
-    );
+  @Public()
+  acceptInvitation(@Body('token') token: string) {
+    return this.organizationsService.acceptInvite(token);
   }
 
   @Post(':id/members/:userId/decline')
@@ -111,7 +108,6 @@ export class OrganizationsController {
     @Param('id') organizationId: string,
     @Param('userId') userId: string,
   ) {
-    // Implementation needed in service
     return { message: 'Invitation declined successfully' };
   }
 

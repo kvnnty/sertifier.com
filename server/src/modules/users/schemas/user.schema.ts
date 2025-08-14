@@ -7,22 +7,22 @@ export type UserDocument = User & Document;
 export class User {
   _id: Types.ObjectId;
 
-  @Prop({ required: true, unique: true, lowercase: true })
+  @Prop({ required: true, unique: true, lowercase: true, index: true })
   email: string;
 
   @Prop({ required: false })
   passwordHash: string;
 
-  @Prop({ required: true, trim: true })
+  @Prop({ trim: true })
   firstName: string;
 
-  @Prop({ required: true, trim: true })
+  @Prop({ trim: true })
   lastName: string;
 
   @Prop()
   profileImage?: string;
 
-  @Prop({ default: false })
+  @Prop({ default: false, index: true })
   isVerified: boolean;
 
   @Prop({ default: 'local' })
@@ -60,7 +60,3 @@ UserSchema.set('toJSON', {
     return ret;
   },
 });
-
-// Add indexes
-UserSchema.index({ email: 1 }, { unique: true });
-UserSchema.index({ isActive: 1 });

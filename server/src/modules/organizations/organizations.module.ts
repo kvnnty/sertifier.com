@@ -1,18 +1,39 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { OrganizationsController } from './organizations.controller';
 import { OrganizationsService } from './organizations.service';
-import { Invitation, InvitationSchema } from './schema/invitation.schema';
-import { OrganizationMember, OrganizationMemberSchema } from './schema/organization-member.schema';
+import {
+  OrganizationMember,
+  OrganizationMemberSchema,
+} from './schema/organization-member.schema';
 import { Organization, OrganizationSchema } from './schema/organization.schema';
+import { UsersModule } from '../users/users.module';
+import { MailModule } from '../mail/mail.module';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Organization.name, schema: OrganizationSchema },
       { name: OrganizationMember.name, schema: OrganizationMemberSchema },
-      { name: Invitation.name, schema: InvitationSchema },
     ]),
+    forwardRef(() => UsersModule),
+    MailModule,
+    JwtModule.registerAsync({
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>(
+          'ORGANIZATION_INVITATION_TOKEN_SECRET',
+        ),
+        signOptions: {
+          expiresIn:
+            configService.get<string>(
+              'ORGANIZATION_INVITATION_TOKEN_EXPIRES_IN',
+            ) || '7d',
+        },
+      }),
+      inject: [ConfigService],
+    }),
   ],
   providers: [OrganizationsService],
   controllers: [OrganizationsController],
