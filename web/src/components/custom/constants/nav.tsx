@@ -53,17 +53,17 @@ export const SIDEBAR_NAV_ITEMS = [
     children: [
       {
         label: "Credential Designs",
-        href: "/portal/user/credential-designs",
+        href: "/portal/user/components/credential-designs",
         icon: <Palette className="w-5 h-5" />,
       },
       {
         label: "Credential Details",
-        href: "/portal/user/credential-details",
+        href: "/portal/user/components/credential-details",
         icon: <BookOpen className="w-5 h-5" />,
       },
       {
         label: "Email Templates",
-        href: "/portal/user/email-templates",
+        href: "/portal/user/components/email-templates",
         icon: <Mail className="w-5 h-5" />,
       },
     ],
@@ -74,22 +74,22 @@ export const SIDEBAR_NAV_ITEMS = [
     children: [
       {
         label: "Collections",
-        href: "/portal/user/collections",
+        href: "/portal/user/advanced/collections",
         icon: <ScanQrCode className="w-5 h-5" />,
       },
       {
         label: "Integrations",
-        href: "/portal/user/integrations",
+        href: "/portal/user/advanced/integrations",
         icon: <Network className="w-5 h-5" />,
       },
       {
         label: "Ads",
-        href: "/portal/user/ads",
+        href: "/portal/user/advanced/ads",
         icon: <Megaphone className="w-5 h-5" />,
       },
       {
         label: "Customer Portal",
-        href: "/portal/user/customer-portal",
+        href: "/portal/user/advanced/customer-portal",
         icon: <LayoutPanelTop className="w-5 h-5" />,
       },
     ],

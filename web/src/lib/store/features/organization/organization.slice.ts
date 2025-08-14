@@ -1,10 +1,10 @@
-import { IOrganization } from "@/types/organization";
+import { Organization } from "@/types/organization";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { fetchOrganizations } from "./organization.thunks";
 
 interface OrganizationState {
-  currentOrganization: IOrganization | null;
-  organizations: IOrganization[];
+  currentOrganization: Organization | null;
+  organizations: Organization[];
   loading: boolean;
   error: string | null;
 }
@@ -20,10 +20,10 @@ const organizationSlice = createSlice({
   name: "organization",
   initialState,
   reducers: {
-    setCurrentOrganization(state, action: PayloadAction<IOrganization>) {
+    setCurrentOrganization(state, action: PayloadAction<Organization>) {
       state.currentOrganization = action.payload;
     },
-    setOrganizations(state, action: PayloadAction<IOrganization[]>) {
+    setOrganizations(state, action: PayloadAction<Organization[]>) {
       state.organizations = action.payload;
     },
     clearOrganizationState(state) {

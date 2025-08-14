@@ -27,7 +27,7 @@ export type BrandingSettings = {
 
 export type SubscriptionPlan = "trial" | "basic" | "premium" | "enterprise";
 
-export interface IOrganization {
+export interface Organization {
   _id: string;
   name: string;
   slug: string;

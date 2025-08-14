@@ -1,5 +1,6 @@
 "use client";
 
+import Spinner from "@/components/loaders/Spinner";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -51,7 +52,6 @@ export default function SignupPage() {
       });
 
       openAuthModal("email_verification", { email: data.email });
-      
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "An error occurred during registration";
       toast.error("Sign up failed", {
@@ -149,7 +149,7 @@ export default function SignupPage() {
               type="submit"
               className="hover:cursor-pointer w-full py-6 text-lg font-medium bg-green-900 hover:bg-green-800"
               disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Signing up..." : "Sign Up"}
+              {form.formState.isSubmitting ? <Spinner /> : "Sign Up"}
             </Button>
           </form>
         </Form>

@@ -1,10 +1,10 @@
-import { IUser } from "@/types/user";
+import { User } from "@/types/user";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { fetchCurrentUser } from "./auth.thunks";
 
 interface AuthState {
   isLoggedIn: boolean;
-  user: IUser | null;
+  user: User | null;
   accessToken: string | null;
   loading: boolean;
   error: string | null;
@@ -37,7 +37,7 @@ const authSlice = createSlice({
     updateAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
-    updateUser: (state, action: PayloadAction<Partial<IUser>>) => {
+    updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
       }

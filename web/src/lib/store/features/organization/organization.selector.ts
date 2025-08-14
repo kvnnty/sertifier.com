@@ -9,7 +9,6 @@ export const useOrganization = () => {
       organizations,
       loading,
       error,
-      hasOrganizations: organizations.length > 0,
       hasCurrentOrganization: !!currentOrganization,
     };
   });

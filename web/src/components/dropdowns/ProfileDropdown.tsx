@@ -21,6 +21,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import Spinner from "../loaders/Spinner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import Link from "next/link";
 
 export default function ProfileDropdown() {
   const { currentUser } = useAuth();
@@ -105,14 +106,18 @@ export default function ProfileDropdown() {
           </div>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Plus />
-          Create Organization
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Users />
-          Organization Settings
-        </DropdownMenuItem>
+        <Link href="/portal/user/organizations/create">
+          <DropdownMenuItem>
+            <Plus />
+            Create Organization
+          </DropdownMenuItem>
+        </Link>
+        <Link href="/portal/user/organizations/settings">
+          <DropdownMenuItem>
+            <Users />
+            Organization Settings
+          </DropdownMenuItem>
+        </Link>
         <DropdownMenuSeparator />
         <button
           disabled={logoutPending}

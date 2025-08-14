@@ -1,13 +1,14 @@
+import { User } from "./user";
 
 export type MemberStatus = "active" | "pending" | "suspended" | "left";
 
-export interface OrganizationMemberType {
-  id: string;
-  userId: string;
+export interface OrganizationMember {
+  _id: string;
   organizationId: string;
+  user: User;
+  invitedBy?: User;
   permissions: string[];
   status: MemberStatus;
-  invitedBy?: string;
   invitedAt?: Date;
   joinedAt?: Date;
   leftAt?: Date;
