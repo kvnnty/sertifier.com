@@ -47,7 +47,7 @@ export default function AuthGuardProvider({ children }: AuthProviderProps) {
       }
 
       if (isLoggedIn && !currentUser?.isVerified) {
-        openAuthModal("email_verification", { preventClose: true });
+        openAuthModal("email_verification", { preventClose: true, email: currentUser?.email });
       }
     }
   }, [isLoggedIn, currentUser, router, loading]);

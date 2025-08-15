@@ -265,7 +265,7 @@ export default function Campaigns() {
               </DropdownMenuContent>
             </DropdownMenu>
             <div className="relative">
-              <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <SearchIcon className="text-muted-foreground absolute top-1/2 -translate-y-1/2 left-2 h-5 w-5" />
               <Input
                 type="search"
                 placeholder="Search..."

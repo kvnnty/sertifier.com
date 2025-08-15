@@ -10,6 +10,12 @@ import { OrganizationsModule } from './modules/organizations/organizations.modul
 import { OtpModule } from './modules/otp/otp.module';
 import { TemplatesModule } from './modules/templates/templates.module';
 import { UsersModule } from './modules/users/users.module';
+import { CampaignsModule } from './modules/campaigns/campaigns.module';
+import { RecipientsModule } from './modules/recipients/recipients.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { IntegrationsModule } from './modules/integrations/integrations.module';
+import { VerificationModule } from './modules/verification/verification.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,8 +29,13 @@ import { UsersModule } from './modules/users/users.module';
     MailModule,
     OrganizationsModule,
     CredentialsModule,
+    CampaignsModule,
+    RecipientsModule,
     TemplatesModule,
+    IntegrationsModule,
+    VerificationModule,
     NotificationsModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule {}

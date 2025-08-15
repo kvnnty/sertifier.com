@@ -30,7 +30,7 @@ export default function CredentialCard({
 //   onDelete,
 CredentialCardProps) {
   return (
-    <Card className="bg-white border border-gray-200 rounded-lg hover:scale-103 duration-300 space-y-[-3rem] max-w-[330px]">
+    <Card className="bg-white border border-gray-200 rounded-lg hover:scale-103 duration-300 space-y-[-3rem]">
       <CardContent className="">
         {/* Design preview area */}
           <div className="bg-gray-100 w-full h-[150px]">

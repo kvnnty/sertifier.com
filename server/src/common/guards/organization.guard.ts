@@ -1,37 +1,19 @@
 import {
+  Injectable,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
-  Injectable,
 } from '@nestjs/common';
-import { OrganizationsService } from 'src/modules/organizations/organizations.service';
 
 @Injectable()
 export class OrganizationGuard implements CanActivate {
-  constructor(private organizationsService: OrganizationsService) {}
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
-    const organizationId = request.params.id;
 
-    if (!organizationId) {
-      return true; // Let other guards handle this
+    if (!request.organization?.id) {
+      throw new ForbiddenException('Organization context required');
     }
 
-    // Check if user is a member of the organization
-    const userOrganizations =
-      await this.organizationsService.getUserOrganizations(user.id);
-    const isMember = userOrganizations.some(
-      (org) => org._id.toString() === organizationId,
-    );
-
-    if (!isMember) {
-      throw new ForbiddenException('You are not a member of this organization');
-    }
-
-    // Add organization context to request
-    request.organizationId = organizationId;
     return true;
   }
 }

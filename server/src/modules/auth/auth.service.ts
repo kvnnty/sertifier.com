@@ -172,8 +172,15 @@ export class AuthService {
   ): Promise<UserDocument> {
     const user = await this.usersService.findByEmail(email);
 
-    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-      throw new BadRequestException('Invalid credentials');
+    if (!user || user.authProvider !== 'local') {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (
+      !user.passwordHash ||
+      !(await bcrypt.compare(password, user.passwordHash))
+    ) {
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     return user;
@@ -184,6 +191,12 @@ export class AuthService {
 
     if (existingUser) {
       return existingUser;
+    }
+
+    if (existingUser.authProvider !== 'google') {
+      throw new BadRequestException(
+        'This account was registered with local credentials. Please use the local login method.',
+      );
     }
 
     return this.usersService.createNewUser({
