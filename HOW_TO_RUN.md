@@ -1,7 +1,7 @@
 ## How to Run the Project
 
 
-### SERVER (NestJS Backend)
+### SERVER
 
 Run the NestJS backend API.
 
