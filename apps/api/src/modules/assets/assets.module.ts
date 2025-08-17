@@ -9,7 +9,8 @@ import { Asset, AssetSchema } from './schema/asset.schema';
     MongooseModule.forFeature([{ name: Asset.name, schema: AssetSchema }]),
   ],
   controllers: [AssetsController],
-  providers: [AssetsService, FileUploadService],
+  // providers: [AssetsService, FileUploadService],
+  providers: [AssetsService],
   exports: [AssetsService],
 })
 export class AssetsModule {}

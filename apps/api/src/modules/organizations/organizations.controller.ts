@@ -10,7 +10,7 @@ import {
   Post,
   Put,
   Query,
-  Request,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { RequirePermissions } from '../../common/decorators/permissions.decorator';
@@ -23,6 +23,7 @@ import { UpdateMemberPermissionsDto } from '../organizations/dto/update-member-p
 import { UpdateOrganizationDto } from '../organizations/dto/update-organization.dto';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { Public } from '@/common/decorators/public.decorator';
+import { Request } from 'express';
 
 @Controller('organizations')
 @UseGuards(JwtAuthGuard)
@@ -30,7 +31,10 @@ export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
   @Post()
-  create(@Body() createOrganizationDto: CreateOrganizationDto, @Request() req) {
+  create(
+    @Body() createOrganizationDto: CreateOrganizationDto,
+    @Req() req: Request,
+  ) {
     return this.organizationsService.create({
       ...createOrganizationDto,
       createdBy: req.user.id,
@@ -46,7 +50,7 @@ export class OrganizationsController {
   }
 
   @Get('/my-organizations')
-  async getCurrentUserOrganizations(@Request() req) {
+  async getCurrentUserOrganizations(@Req() req: Request) {
     const organizations = await this.organizationsService.getUserOrganizations(
       req.user.id,
     );
@@ -86,12 +90,12 @@ export class OrganizationsController {
   inviteMember(
     @Param('id') organizationId: string,
     @Body() inviteMemberDto: InviteMemberDto,
-    @Request() req,
+    @Req() req: Request,
   ) {
     return this.organizationsService.inviteMember(
-      organizationId,
-      inviteMemberDto,
+      req.organization.id,
       req.user.id,
+      inviteMemberDto,
     );
   }
 

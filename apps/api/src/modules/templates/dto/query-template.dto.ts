@@ -1,11 +1,7 @@
 import {
-  IsString,
-  IsEnum,
   IsOptional,
-  IsObject,
-  IsArray,
+  IsString
 } from 'class-validator';
-import { TemplateType } from '../schema/template.schema';
 
 export class QueryTemplatesDto {
   @IsString()

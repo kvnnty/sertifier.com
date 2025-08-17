@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose';
 
 export type OrganizationMemberDocument = OrganizationMember & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, collection: 'organization_members' })
 export class OrganizationMember {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;

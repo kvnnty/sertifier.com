@@ -1,24 +1,22 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
-import { CampaignsService } from './campaigns.service';
-import {
-  CreateCampaignDto,
-  UpdateCampaignDto,
-  QueryCampaignsDto,
-  BulkIssueDto,
-} from './dto';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { OrganizationGuard } from '@/common/guards/organization.guard';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards
+} from '@nestjs/common';
+import { Request } from 'express';
+import { CampaignsService } from './campaigns.service';
+import {
+  BulkIssueDto,
+  CreateCampaignDto,
+  QueryCampaignsDto
+} from './dto';
 
 @Controller('campaigns')
 @UseGuards(JwtAuthGuard, OrganizationGuard)
@@ -49,28 +47,28 @@ export class CampaignsController {
     return this.campaignsService.getAnalytics(id, req.organization.id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateCampaignDto: UpdateCampaignDto,
-    @Req() req: Request,
-  ) {
-    return this.campaignsService.update(
-      id,
-      updateCampaignDto,
-      req.organization.id,
-    );
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateCampaignDto: UpdateCampaignDto,
+  //   @Req() req: Request,
+  // ) {
+  //   return this.campaignsService.update(
+  //     id,
+  //     updateCampaignDto,
+  //     req.organization.id,
+  //   );
+  // }
 
   @Post(':id/start')
   start(@Param('id') id: string, @Req() req: Request) {
     return this.campaignsService.start(id, req.organization.id);
   }
 
-  @Post(':id/pause')
-  pause(@Param('id') id: string, @Req() req: Request) {
-    return this.campaignsService.pause(id, req.organization.id);
-  }
+  // @Post(':id/pause')
+  // pause(@Param('id') id: string, @Req() req: Request) {
+  //   return this.campaignsService.pause(id, req.organization.id);
+  // }
 
   @Post(':id/bulk-issue')
   bulkIssue(
@@ -85,8 +83,8 @@ export class CampaignsController {
     );
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: Request) {
-    return this.campaignsService.remove(id, req.organization.id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string, @Req() req: Request) {
+  //   return this.campaignsService.remove(id, req.organization.id);
+  // }
 }

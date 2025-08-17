@@ -25,61 +25,61 @@ export class AnalyticsService {
     await analytics.save();
   }
 
-  async getDashboardData(organizationId: string, query: AnalyticsQueryDto) {
-    const { startDate, endDate } = this.getDateRange(query.timeRange);
+  async getDashboardData(organizationId: string) {
+    // const { startDate, endDate } = this.getDateRange(query.timeRange);
 
-    const [
-      credentialsIssued,
-      credentialsVerified,
-      emailsOpened,
-      socialShares,
-      topCampaigns,
-      recentActivity,
-    ] = await Promise.all([
-      this.getCredentialsIssuedCount(organizationId, startDate, endDate),
-      this.getCredentialsVerifiedCount(organizationId, startDate, endDate),
-      this.getEmailsOpenedCount(organizationId, startDate, endDate),
-      this.getSocialSharesCount(organizationId, startDate, endDate),
-      this.getTopCampaigns(organizationId, startDate, endDate),
-      this.getRecentActivity(organizationId, 10),
-    ]);
+    // const [
+    //   credentialsIssued,
+    //   credentialsVerified,
+    //   emailsOpened,
+    //   socialShares,
+    //   topCampaigns,
+    //   recentActivity,
+    // ] = await Promise.all([
+    //   this.getCredentialsIssuedCount(organizationId, startDate, endDate),
+    //   this.getCredentialsVerifiedCount(organizationId, startDate, endDate),
+    //   this.getEmailsOpenedCount(organizationId, startDate, endDate),
+    //   this.getSocialSharesCount(organizationId, startDate, endDate),
+    //   this.getTopCampaigns(organizationId, startDate, endDate),
+    //   this.getRecentActivity(organizationId, 10),
+    // ]);
 
-    return {
-      summary: {
-        credentialsIssued: credentialsIssued.count,
-        credentialsVerified: credentialsVerified.count,
-        emailOpenRate: emailsOpened.rate,
-        socialShares: socialShares.count,
-        trends: {
-          credentialsIssued: credentialsIssued.trend,
-          credentialsVerified: credentialsVerified.trend,
-        },
-      },
-      topCampaigns,
-      recentActivity,
-      charts: {
-        credentialsOverTime: await this.getCredentialsOverTime(
-          organizationId,
-          startDate,
-          endDate,
-        ),
-        verificationsOverTime: await this.getVerificationsOverTime(
-          organizationId,
-          startDate,
-          endDate,
-        ),
-        campaignPerformance: await this.getCampaignPerformance(
-          organizationId,
-          startDate,
-          endDate,
-        ),
-      },
-    };
+    // return {
+    //   summary: {
+    //     credentialsIssued: credentialsIssued.count,
+    //     credentialsVerified: credentialsVerified.count,
+    //     emailOpenRate: emailsOpened.rate,
+    //     socialShares: socialShares.count,
+    //     trends: {
+    //       credentialsIssued: credentialsIssued.trend,
+    //       credentialsVerified: credentialsVerified.trend,
+    //     },
+    //   },
+    //   topCampaigns,
+    //   recentActivity,
+      // charts: {
+      //   credentialsOverTime: await this.getCredentialsOverTime(
+      //     organizationId,
+      //     startDate,
+      //     endDate,
+      //   ),
+      //   verificationsOverTime: await this.getVerificationsOverTime(
+      //     organizationId,
+      //     startDate,
+      //     endDate,
+      //   ),
+      //   campaignPerformance: await this.getCampaignPerformance(
+      //     organizationId,
+      //     startDate,
+      //     endDate,
+      //   ),
+      // },
+    // };
   }
 
   async generateInsights(organizationId: string): Promise<any> {
     // AI-powered insights generation
-    const data = await this.getRawAnalyticsData(organizationId);
+    // const data = await this.getRawAnalyticsData(organizationId);
 
     return {
       insights: [

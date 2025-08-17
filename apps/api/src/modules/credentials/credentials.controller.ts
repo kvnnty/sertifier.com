@@ -13,7 +13,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { CredentialsService } from './credentials.service';
 import { CreateCredentialsDto, QueryCredentialsDto } from './dto';
 
@@ -46,11 +46,6 @@ export class CredentialsController {
   @Get(':id/download')
   download(@Param('id') id: string, @Req() req: Request, @Res() res: Response) {
     return this.credentialsService.downloadPDF(id, req.organization.id, res);
-  }
-
-  @Post(':id/resend-email')
-  resendEmail(@Param('id') id: string, @Req() req: Request) {
-    return this.credentialsService.resendEmail(id, req.organization.id);
   }
 
   @Patch(':id/revoke')

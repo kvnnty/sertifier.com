@@ -16,9 +16,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { BulkImportDto, CreateRecipientDto, QueryRecipientsDto, UpdateRecipientDto } from './dto',
+import {
+  BulkImportDto,
+  CreateRecipientDto,
+  QueryRecipientsDto,
+  UpdateRecipientDto,
+} from './dto';
 import { RecipientsService } from './recipients.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('recipients')
 @UseGuards(JwtAuthGuard, OrganizationGuard)
@@ -53,7 +58,11 @@ export class RecipientsController {
   }
 
   @Get('export')
-  export(@Query() query: QueryRecipientsDto, @Req() req: Request, @Res() res: Response) {
+  export(
+    @Query() query: QueryRecipientsDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     return this.recipientsService.exportToCSV(req.organization.id, query, res);
   }
 

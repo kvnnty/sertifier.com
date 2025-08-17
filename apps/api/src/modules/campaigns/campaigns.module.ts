@@ -1,12 +1,10 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AnalyticsModule } from '../analytics/analytics.module';
+import { CredentialsModule } from '../credentials/credentials.module';
 import { CampaignsController } from './campaigns.controller';
 import { CampaignsService } from './campaigns.service';
-import { MongooseModule } from '@nestjs/mongoose';
 import { Campaign, CampaignSchema } from './schema/campaign.schema';
-import { CredentialsModule } from '../credentials/credentials.module';
-import { RecipientsModule } from '../recipients/recipients.module';
-import { NotificationsModule } from '../notifications/notifications.module';
-import { AnalyticsModule } from '../analytics/analytics.module';
 
 @Module({
   imports: [
@@ -14,8 +12,6 @@ import { AnalyticsModule } from '../analytics/analytics.module';
       { name: Campaign.name, schema: CampaignSchema },
     ]),
     forwardRef(() => CredentialsModule),
-    RecipientsModule,
-    NotificationsModule,
     AnalyticsModule,
   ],
   controllers: [CampaignsController],

@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AiService } from './ai.service';
-import { AiController } from './ai.controller';
+import { AIController } from './ai.controller';
+import { AIService } from './ai.service';
 
 @Module({
   providers: [
-    AiService,
-    TemplateAIService,
-    ContentGenerationService,
-    AiService,
+    AIService,
   ],
-  exports: [AiService],
-  controllers: [AiController],
+  exports: [AIService],
+  controllers: [AIController],
 })
 export class AIModule {}

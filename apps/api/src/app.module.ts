@@ -15,6 +15,8 @@ import { RecipientsModule } from './modules/recipients/recipients.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { VerificationModule } from './modules/verification/verification.module';
+import { AIModule } from './modules/ai/ai.module';
+import { AssetsModule } from './modules/assets/assets.module';
 
 @Module({
   imports: [
@@ -28,14 +30,16 @@ import { VerificationModule } from './modules/verification/verification.module';
     OtpModule,
     MailModule,
     OrganizationsModule,
-    CredentialsModule,
     CampaignsModule,
+    CredentialsModule,
     RecipientsModule,
     TemplatesModule,
     IntegrationsModule,
     VerificationModule,
     NotificationsModule,
     AnalyticsModule,
+    AIModule,
+    AssetsModule,
   ],
 })
 export class AppModule {}

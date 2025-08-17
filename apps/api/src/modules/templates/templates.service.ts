@@ -6,12 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AIService } from '../ai/ai.service';
-import { AnalyticsService } from '../analytics/analytics.service';
-import {
-  CreateTemplateDto,
-  QueryTemplatesDto,
-  UpdateTemplateDto,
-} from './dto';
+import { CreateTemplateDto, QueryTemplatesDto, UpdateTemplateDto } from './dto';
 import {
   Template,
   TemplateDocument,
@@ -22,15 +17,14 @@ import {
 export class TemplatesService {
   constructor(
     @InjectModel(Template.name) private templateModel: Model<TemplateDocument>,
-    private aiService : AIService,
-    private analyticsService: AnalyticsService
+    private aiService: AIService,
   ) {}
 
   async create(
     createTemplateDto: CreateTemplateDto,
     userId: string,
     organizationId: string,
-  ): Promise<Template> {
+  ) {
     const template = new this.templateModel({
       ...createTemplateDto,
       organizationId,
@@ -79,7 +73,7 @@ export class TemplatesService {
     };
   }
 
-  async findOne(id: string, organizationId: string): Promise<Template> {
+  async findOne(id: string, organizationId: string) {
     const template = await this.templateModel
       .findOne({ _id: id, organizationId })
       .populate('createdBy', 'firstName lastName email')
@@ -95,7 +89,7 @@ export class TemplatesService {
     id: string,
     updateTemplateDto: UpdateTemplateDto,
     organizationId: string,
-  ): Promise<Template> {
+  ) {
     const template = await this.templateModel
       .findOneAndUpdate({ _id: id, organizationId }, updateTemplateDto, {
         new: true,
@@ -125,32 +119,25 @@ export class TemplatesService {
     }
   }
 
-  async duplicate(
-    id: string,
-    organizationId: string,
-    userId: string,
-  ): Promise<Template> {
+  async duplicate(id: string, organizationId: string, userId: string) {
     const original = await this.findOne(id, organizationId);
-
     const duplicated = new this.templateModel({
-      ...original.toObject(),
-      _id: undefined,
+      ...original,
       name: `${original.name} (Copy)`,
       status: TemplateStatus.DRAFT,
       createdBy: userId,
       usageCount: 0,
-      createdAt: undefined,
-      updatedAt: undefined,
     });
 
     return duplicated.save();
   }
 
-  async updateStatus(
-    id: string,
-    status: string,
-    organizationId: string,
-  ): Promise<Template> {
+  private async isTemplateInUse(templateId: string): Promise<boolean> {
+    // This would check against campaigns - implement when campaigns module is ready
+    return false;
+  }
+
+  async updateStatus(id: string, status: string, organizationId: string) {
     return this.update(
       id,
       { status: status as TemplateStatus },
@@ -158,75 +145,54 @@ export class TemplatesService {
     );
   }
 
-  private async isTemplateInUse(templateId: string): Promise<boolean> {
-    // This would check against campaigns - implement when campaigns module is ready
-    return false;
-  }
-  async generateTemplateFromDescription(
-    description: string,
-    organizationId: string,
-    userId: string,
-  ): Promise<Template> {
-    // AI Integration: Generate template design from natural language description
-    const aiDesign = await this.aiService.generateTemplateDesign(description);
+  // async generateTemplateFromDescription(
+  //   description: string,
+  //   organizationId: string,
+  //   userId: string,
+  // ) {
+  //   // AI Integration: Generate template design from natural language description
+  //   const aiDesign = await this.aiService.generateTemplateDesign(description);
 
-    const template = new this.templateModel({
-      name: aiDesign.suggestedName,
-      description: description,
-      type: aiDesign.type,
-      design: aiDesign.design,
-      fields: aiDesign.suggestedFields,
-      organizationId,
-      createdBy: userId,
-      tags: aiDesign.suggestedTags,
-    });
+  //   const template = new this.templateModel({
+  //     name: aiDesign.suggestedName,
+  //     description: description,
+  //     type: aiDesign.type,
+  //     design: aiDesign.design,
+  //     fields: aiDesign.suggestedFields,
+  //     organizationId,
+  //     createdBy: userId,
+  //     tags: aiDesign.suggestedTags,
+  //   });
 
-    return template.save();
-  }
+  //   return template.save();
+  // }
 
-  async optimizeTemplate(
-    id: string,
-    organizationId: string,
-  ): Promise<Template> {
-    // AI Integration: Analyze template usage and suggest optimizations
-    const template = await this.findOne(id, organizationId);
-    const analytics = await this.analyticsService.getTemplatePerformance(id);
+  // async translateTemplate(
+  //   id: string,
+  //   targetLanguage: string,
+  //   organizationId: string,
+  // ) {
+  //   // AI Integration: Auto-translate template content
+  //   const template = await this.findOne(id, organizationId);
+  //   const translatedContent = await this.aiService.translateTemplate(
+  //     template,
+  //     targetLanguage,
+  //   );
 
-    const optimizations = await this.aiService.suggestTemplateOptimizations(
-      template,
-      analytics,
-    );
-
-    return this.update(id, optimizations, organizationId);
-  }
-
-  async translateTemplate(
-    id: string,
-    targetLanguage: string,
-    organizationId: string,
-  ): Promise<Template> {
-    // AI Integration: Auto-translate template content
-    const template = await this.findOne(id, organizationId);
-    const translatedContent = await this.aiService.translateTemplate(
-      template,
-      targetLanguage,
-    );
-
-    return this.duplicate(
-      id,
-      organizationId,
-      template.createdBy.toString(),
-    ).then((duplicate) =>
-      this.update(
-        duplicate._id.toString(),
-        {
-          name: `${template.name} (${targetLanguage})`,
-          design: translatedContent.design,
-          fields: translatedContent.fields,
-        },
-        organizationId,
-      ),
-    );
-  }
+  //   return this.duplicate(
+  //     id,
+  //     organizationId,
+  //     template.createdBy.toString(),
+  //   ).then((duplicate) =>
+  //     this.update(
+  //       duplicate.id.toString(),
+  //       {
+  //         name: `${template.name} (${targetLanguage})`,
+  //         design: translatedContent.design,
+  //         fields: translatedContent.fields,
+  //       },
+  //       organizationId,
+  //     ),
+  //   );
+  // }
 }
-

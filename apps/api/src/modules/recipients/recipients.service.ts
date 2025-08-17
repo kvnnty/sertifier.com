@@ -1,23 +1,26 @@
 import {
-  Injectable,
-  NotFoundException,
   BadRequestException,
   ConflictException,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Response } from 'express';
 import * as csv from 'csv-parser';
 import * as createCsvWriter from 'csv-writer';
+import { Response } from 'express';
+import { Model } from 'mongoose';
 import { Readable } from 'stream';
 
 import {
-  CreateRecipientDto,
-  UpdateRecipientDto,
-  QueryRecipientsDto,
+  Credential,
+  CredentialDocument,
+} from '../credentials/schema/credential.schema';
+import {
   BulkImportDto,
+  CreateRecipientDto,
+  QueryRecipientsDto,
+  UpdateRecipientDto,
 } from './dto';
-import { Credential, CredentialDocument } from '../credentials/schema/credential.schema';
 import { Recipient, RecipientDocument } from './schema/recipients.schema';
 
 @Injectable()
@@ -173,9 +176,9 @@ export class RecipientsService {
 
     // Convert customFields to Map if provided
     if (updateRecipientDto.customFields) {
-      updateRecipientDto.customFields = new Map(
-        Object.entries(updateRecipientDto.customFields),
-      );
+      // updateRecipientDto.customFields = new Map(
+      //   Object.entries(updateRecipientDto.customFields),
+      // );
     }
 
     const recipient = await this.recipientModel
@@ -420,7 +423,7 @@ export class RecipientsService {
     const csvData = recipients.map((recipient) => ({
       ...recipient,
       tags: Array.isArray(recipient.tags) ? recipient.tags.join(', ') : '',
-      createdAt: new Date(recipient.createdAt).toISOString().split('T')[0],
+      // createdAt: new Date(recipient.createdAt).toISOString().split('T')[0],
     }));
 
     const csvString =

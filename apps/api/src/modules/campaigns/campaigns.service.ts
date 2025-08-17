@@ -3,18 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Campaign, CampaignDocument } from './schema/campaign.schema';
 import { CredentialsService } from '../credentials/credentials.service';
-import { RecipientsService } from '../recipients/recipients.service';
-import { NotificationsService } from '../notifications/notifications.service';
+import {  } from '../recipients/recipients.service';
 import { AnalyticsService } from '../analytics/analytics.service';
-import { CreateCampaignDto, UpdateCampaignDto } from './dto';
+import { CreateCampaignDto, QueryCampaignsDto, UpdateCampaignDto } from './dto';
 
 @Injectable()
 export class CampaignsService {
   constructor(
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     private credentialsService: CredentialsService,
-    private recipientsService: RecipientsService,
-    private notificationsService: NotificationsService,
     private analyticsService: AnalyticsService,
   ) {}
 
@@ -87,6 +84,35 @@ export class CampaignsService {
       failed: recipients.length - successCount,
       results,
     };
+  }
+
+  async findAll(
+    organizationId: string,
+    query: QueryCampaignsDto,
+  ): Promise<Campaign[]> {
+    const { page = 1, limit = 10, status } = query;
+    const filter: any = { organizationId };
+
+    if (status) {
+      filter.status = status;
+    }
+
+    return this.campaignModel
+      .find(filter)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+  }
+  async findOne(id: string, organizationId: string): Promise<Campaign> {
+    const campaign = await this.campaignModel
+      .findOne({ _id: id, organizationId })
+      .exec();
+
+    if (!campaign) {
+      throw new NotFoundException('Campaign not found');
+    }
+
+    return campaign;
   }
 
   async getAnalytics(id: string, organizationId: string) {

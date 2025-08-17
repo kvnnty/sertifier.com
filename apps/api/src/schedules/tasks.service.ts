@@ -15,43 +15,43 @@ export class TasksService {
   ) {}
 
   // Process scheduled campaigns every minute
-  @Cron(CronExpression.EVERY_MINUTE)
-  async processScheduledCampaigns() {
-    const campaigns = await this.campaignsService.getScheduledCampaigns();
+  // @Cron(CronExpression.EVERY_MINUTE)
+  // async processScheduledCampaigns() {
+  //   const campaigns = await this.campaignsService.getScheduledCampaigns();
 
-    for (const campaign of campaigns) {
-      await this.campaignsService.start(
-        campaign._id.toString(),
-        campaign.organizationId.toString(),
-      );
-    }
-  }
+  //   for (const campaign of campaigns) {
+  //     await this.campaignsService.start(
+  //       campaign._id.toString(),
+  //       campaign.organizationId.toString(),
+  //     );
+  //   }
+  // }
 
-  // Send pending notifications every 5 minutes
-  @Cron('*/5 * * * *')
-  async processPendingNotifications() {
-    await this.notificationsService.processPendingNotifications();
-  }
+  // // Send pending notifications every 5 minutes
+  // @Cron('*/5 * * * *')
+  // async processPendingNotifications() {
+  //   await this.notificationsService.processPendingNotifications();
+  // }
 
-  // Generate daily analytics reports
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
-  async generateDailyReports() {
-    const organizations = await this.organizationsService.getAllActive();
+  // // Generate daily analytics reports
+  // @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  // async generateDailyReports() {
+  //   const organizations = await this.organizationsService.getAllActive();
 
-    for (const org of organizations) {
-      await this.analyticsService.generateDailyReport(org._id.toString());
-    }
-  }
+  //   for (const org of organizations) {
+  //     await this.analyticsService.generateDailyReport(org._id.toString());
+  //   }
+  // }
 
-  // Clean up expired credentials monthly
-  @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
-  async cleanupExpiredCredentials() {
-    await this.credentialsService.markExpiredCredentials();
-  }
+  // // Clean up expired credentials monthly
+  // @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  // async cleanupExpiredCredentials() {
+  //   await this.credentialsService.markExpiredCredentials();
+  // }
 
-  // Backup analytics data weekly
-  @Cron(CronExpression.EVERY_WEEK)
-  async backupAnalytics() {
-    await this.analyticsService.backupData();
-  }
+  // // Backup analytics data weekly
+  // @Cron(CronExpression.EVERY_WEEK)
+  // async backupAnalytics() {
+  //   await this.analyticsService.backupData();
+  // }
 }

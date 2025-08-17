@@ -25,7 +25,7 @@ export class OrganizationMiddleware implements NestMiddleware {
       throw new ForbiddenException('Access denied to this organization');
     }
 
-    req['organization'] = { id: organizationId };
+    // req['organization'] = { id : organizationId };
     next();
   }
 }

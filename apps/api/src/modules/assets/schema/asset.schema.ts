@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Types } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 export type AssetDocument = Asset & Document;
 
@@ -40,10 +40,6 @@ export class Asset {
     width: Number,
     height: Number,
   })
-  dimensions: {
-    width: number;
-    height: number;
-  };
 
   @Prop([String])
   tags: string[];

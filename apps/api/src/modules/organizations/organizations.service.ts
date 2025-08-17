@@ -128,6 +128,19 @@ export class OrganizationsService {
     return { message: 'Organization updated', organization };
   }
 
+  async userHasAccess(
+    userId: string,
+    organizationId: string,
+  ): Promise<boolean> {
+    const membership = await this.organizationMemberModel.findOne({
+      userId,
+      organizationId,
+      status: 'active',
+    });
+
+    return !!membership;
+  }
+
   async remove(id: string): Promise<void> {
     const result = await this.organizationModel.findByIdAndUpdate(
       id,
@@ -149,8 +162,8 @@ export class OrganizationsService {
   // Generates an invite token and sends email
   async inviteMember(
     organizationId: string,
-    dto: InviteMemberDto,
     invitedBy: string,
+    dto: InviteMemberDto,
   ) {
     const organization = await this.findById(organizationId);
     if (!organization) throw new NotFoundException('Organization not found');
