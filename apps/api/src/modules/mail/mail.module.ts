@@ -19,7 +19,7 @@ import path from 'path';
           },
         },
         defaults: {
-          from: `"No Reply" <${process.env.MAIL_FROM}>`,
+          from: configService.get<string>('SMTP_FROM'),
         },
         template: {
           dir: __dirname + '/templates',
