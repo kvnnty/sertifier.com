@@ -6,7 +6,11 @@ export function attachAxiosInterceptors(store: Store) {
   axiosClient.interceptors.request.use(
     (config) => {
       const accessToken = store.getState().auth.accessToken;
+      const organizationId = store.getState().organization.currentOrganization._id;
+
       if (accessToken) config.headers["Authorization"] = `Bearer ${accessToken}`;
+      if (organizationId) config.headers['x-organization-id'] =  organizationId;
+     
       return config;
     },
     (error) => Promise.reject(error)
