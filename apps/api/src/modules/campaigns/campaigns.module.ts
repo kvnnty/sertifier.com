@@ -5,6 +5,7 @@ import { CredentialsModule } from '../credentials/credentials.module';
 import { CampaignsController } from './campaigns.controller';
 import { CampaignsService } from './campaigns.service';
 import { Campaign, CampaignSchema } from './schema/campaign.schema';
+import { SharedModule } from '../shared/shared.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { Campaign, CampaignSchema } from './schema/campaign.schema';
     ]),
     forwardRef(() => CredentialsModule),
     AnalyticsModule,
+    SharedModule
   ],
   controllers: [CampaignsController],
   providers: [CampaignsService],

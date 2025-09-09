@@ -29,23 +29,23 @@ export class CredentialsController {
   ) {
     return this.credentialsService.create(
       createCredentialDto,
-      req.organization.id,
+      req.organizationId,
     );
   }
 
   @Get()
   findAll(@Query() query: QueryCredentialsDto, @Req() req: Request) {
-    return this.credentialsService.findAll(req.organization.id, query);
+    return this.credentialsService.findAll(req.organizationId, query);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
-    return this.credentialsService.findOne(id, req.organization.id);
+    return this.credentialsService.findOne(id, req.organizationId);
   }
 
   @Get(':id/download')
   download(@Param('id') id: string, @Req() req: Request, @Res() res: Response) {
-    return this.credentialsService.downloadPDF(id, req.organization.id, res);
+    return this.credentialsService.downloadPDF(id, req.organizationId, res);
   }
 
   @Patch(':id/revoke')
@@ -54,11 +54,11 @@ export class CredentialsController {
     @Body('reason') reason: string,
     @Req() req: Request,
   ) {
-    return this.credentialsService.revoke(id, reason, req.organization.id);
+    return this.credentialsService.revoke(id, reason, req.organizationId);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req: Request) {
-    return this.credentialsService.remove(id, req.organization.id);
+    return this.credentialsService.remove(id, req.organizationId);
   }
 }

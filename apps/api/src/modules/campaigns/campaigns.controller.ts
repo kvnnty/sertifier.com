@@ -8,15 +8,11 @@ import {
   Post,
   Query,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CampaignsService } from './campaigns.service';
-import {
-  BulkIssueDto,
-  CreateCampaignDto,
-  QueryCampaignsDto
-} from './dto';
+import { BulkIssueDto, CreateCampaignDto, QueryCampaignsDto } from './dto';
 
 @Controller('campaigns')
 @UseGuards(JwtAuthGuard, OrganizationGuard)
@@ -28,23 +24,23 @@ export class CampaignsController {
     return this.campaignsService.create(
       createCampaignDto,
       req.user.id,
-      req.organization.id,
+      req.organizationId,
     );
   }
 
   @Get()
   findAll(@Query() query: QueryCampaignsDto, @Req() req: Request) {
-    return this.campaignsService.findAll(req.organization.id, query);
+    return this.campaignsService.findAll(req.organizationId, query);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
-    return this.campaignsService.findOne(id, req.organization.id);
+    return this.campaignsService.findOne(id, req.organizationId);
   }
 
   @Get(':id/analytics')
   getAnalytics(@Param('id') id: string, @Req() req: Request) {
-    return this.campaignsService.getAnalytics(id, req.organization.id);
+    return this.campaignsService.getAnalytics(id, req.organizationId);
   }
 
   // @Patch(':id')
@@ -56,18 +52,18 @@ export class CampaignsController {
   //   return this.campaignsService.update(
   //     id,
   //     updateCampaignDto,
-  //     req.organization.id,
+  //     req.organizationId,
   //   );
   // }
 
   @Post(':id/start')
   start(@Param('id') id: string, @Req() req: Request) {
-    return this.campaignsService.start(id, req.organization.id);
+    return this.campaignsService.start(id, req.organizationId);
   }
 
   // @Post(':id/pause')
   // pause(@Param('id') id: string, @Req() req: Request) {
-  //   return this.campaignsService.pause(id, req.organization.id);
+  //   return this.campaignsService.pause(id, req.organizationId);
   // }
 
   @Post(':id/bulk-issue')
@@ -79,12 +75,12 @@ export class CampaignsController {
     return this.campaignsService.bulkIssue(
       id,
       bulkIssueDto.recipients,
-      req.organization.id,
+      req.organizationId,
     );
   }
 
   // @Delete(':id')
   // remove(@Param('id') id: string, @Req() req: Request) {
-  //   return this.campaignsService.remove(id, req.organization.id);
+  //   return this.campaignsService.remove(id, req.organizationId);
   // }
 }

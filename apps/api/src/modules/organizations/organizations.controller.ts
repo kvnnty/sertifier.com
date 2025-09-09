@@ -93,7 +93,7 @@ export class OrganizationsController {
     @Req() req: Request,
   ) {
     return this.organizationsService.inviteMember(
-      req.organization.id,
+      req.organizationId,
       req.user.id,
       inviteMemberDto,
     );

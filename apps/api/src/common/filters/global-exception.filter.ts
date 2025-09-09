@@ -20,14 +20,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message: exception.message || 'Internal server error',
     };
 
-    // Log error for monitoring
-    console.error('HTTP Exception:', {
-      ...errorResponse,
-      stack: exception.stack,
-      user: (request['user'] as any)?.id,
-      organization: request['organization']?.id,
-    });
-
     response.status(status).json(errorResponse);
   }
 }

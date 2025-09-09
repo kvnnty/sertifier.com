@@ -26,18 +26,18 @@ export class TemplatesController {
     return this.templatesService.create(
       createTemplateDto,
       req.user.id,
-      req.organization.id,
+      req.organizationId,
     );
   }
 
   @Get()
   findAll(@Query() query: QueryTemplatesDto, @Req() req: Request) {
-    return this.templatesService.findAll(req.organization.id, query);
+    return this.templatesService.findAll(req.organizationId, query);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
-    return this.templatesService.findOne(id, req.organization.id);
+    return this.templatesService.findOne(id, req.organizationId);
   }
 
   @Patch(':id')
@@ -49,22 +49,18 @@ export class TemplatesController {
     return this.templatesService.update(
       id,
       updateTemplateDto,
-      req.organization.id,
+      req.organizationId,
     );
   }
 
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req: Request) {
-    return this.templatesService.remove(id, req.organization.id);
+    return this.templatesService.remove(id, req.organizationId);
   }
 
   @Post(':id/duplicate')
   duplicate(@Param('id') id: string, @Req() req: Request) {
-    return this.templatesService.duplicate(
-      id,
-      req.organization.id,
-      req.user.id,
-    );
+    return this.templatesService.duplicate(id, req.organizationId, req.user.id);
   }
 
   @Patch(':id/status')
@@ -73,6 +69,6 @@ export class TemplatesController {
     @Body('status') status: string,
     @Req() req: Request,
   ) {
-    return this.templatesService.updateStatus(id, status, req.organization.id);
+    return this.templatesService.updateStatus(id, status, req.organizationId);
   }
 }

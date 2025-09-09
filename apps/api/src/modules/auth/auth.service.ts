@@ -173,14 +173,14 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email);
 
     if (!user || user.authProvider !== 'local') {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new BadRequestException('Invalid credentials');
     }
 
     if (
       !user.passwordHash ||
       !(await bcrypt.compare(password, user.passwordHash))
     ) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new BadRequestException('Invalid credentials');
     }
 
     return user;
@@ -189,14 +189,14 @@ export class AuthService {
   private async findOrCreateGoogleUser(profile: any): Promise<UserDocument> {
     const existingUser = await this.usersService.findByEmail(profile.email);
 
-    if (existingUser) {
-      return existingUser;
-    }
-
-    if (existingUser.authProvider !== 'google') {
+    if (existingUser && existingUser.authProvider !== 'google') {
       throw new BadRequestException(
         'This account was registered with local credentials. Please use the local login method.',
       );
+    }
+
+    if (existingUser && existingUser.authProvider === 'google') {
+      return existingUser;
     }
 
     return this.usersService.createNewUser({
@@ -220,7 +220,7 @@ export class AuthService {
   private async findUserById(id: string): Promise<UserDocument> {
     const user = await this.usersService.findById(id);
     if (!user) {
-      throw new UnauthorizedException('This account does not exist');
+      throw new NotFoundException('This account does not exist');
     }
     return user;
   }

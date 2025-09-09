@@ -4,12 +4,14 @@ import { TemplatesController } from './templates.controller';
 import { TemplatesService } from './templates.service';
 import { Template, TemplateSchema } from './schema/template.schema';
 import { AIModule } from '../ai/ai.module';
+import { SharedModule } from '../shared/shared.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Template.name, schema: TemplateSchema },
     ]),
+    SharedModule,
     AIModule,
   ],
   controllers: [TemplatesController],

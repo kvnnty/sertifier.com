@@ -34,7 +34,7 @@ export class RecipientsController {
   create(@Body() createRecipientDto: CreateRecipientDto, @Req() req: Request) {
     return this.recipientsService.create(
       createRecipientDto,
-      req.organization.id,
+      req.organizationId,
     );
   }
 
@@ -48,13 +48,13 @@ export class RecipientsController {
     return this.recipientsService.bulkImport(
       file,
       bulkImportDto,
-      req.organization.id,
+      req.organizationId,
     );
   }
 
   @Get()
   findAll(@Query() query: QueryRecipientsDto, @Req() req: Request) {
-    return this.recipientsService.findAll(req.organization.id, query);
+    return this.recipientsService.findAll(req.organizationId, query);
   }
 
   @Get('export')
@@ -63,17 +63,17 @@ export class RecipientsController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    return this.recipientsService.exportToCSV(req.organization.id, query, res);
+    return this.recipientsService.exportToCSV(req.organizationId, query, res);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
-    return this.recipientsService.findOne(id, req.organization.id);
+    return this.recipientsService.findOne(id, req.organizationId);
   }
 
   @Get(':id/credentials')
   getCredentials(@Param('id') id: string, @Req() req: Request) {
-    return this.recipientsService.getCredentials(id, req.organization.id);
+    return this.recipientsService.getCredentials(id, req.organizationId);
   }
 
   @Patch(':id')
@@ -85,17 +85,17 @@ export class RecipientsController {
     return this.recipientsService.update(
       id,
       updateRecipientDto,
-      req.organization.id,
+      req.organizationId,
     );
   }
 
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req: Request) {
-    return this.recipientsService.remove(id, req.organization.id);
+    return this.recipientsService.remove(id, req.organizationId);
   }
 
   @Delete('bulk')
   bulkDelete(@Body('ids') ids: string[], @Req() req: Request) {
-    return this.recipientsService.bulkDelete(ids, req.organization.id);
+    return this.recipientsService.bulkDelete(ids, req.organizationId);
   }
 }

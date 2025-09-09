@@ -11,6 +11,7 @@ import { UsersModule } from '../users/users.module';
 import { MailModule } from '../mail/mail.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { SharedModule } from '../shared/shared.module';
 
 @Module({
   imports: [

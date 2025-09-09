@@ -11,7 +11,7 @@ export class AnalyticsController {
 
   // @Get('dashboard')
   // getDashboard(@Req() req: Request, @Query() query: AnalyticsQueryDto) {
-  //   return this.analyticsService.getDashboardData(req.organization.id, query);
+  //   return this.analyticsService.getDashboardData(req.organizationId, query);
   // }
 
   // @Get('credentials')
@@ -20,7 +20,7 @@ export class AnalyticsController {
   //   @Query() query: AnalyticsQueryDto,
   // ) {
   //   return this.analyticsService.getCredentialAnalytics(
-  //     req.organization.id,
+  //     req.organizationId,
   //     query,
   //   );
   // }
@@ -28,7 +28,7 @@ export class AnalyticsController {
   // @Get('campaigns')
   // getCampaignAnalytics(@Req() req: Request, @Query() query: AnalyticsQueryDto) {
   //   return this.analyticsService.getCampaignAnalytics(
-  //     req.organization.id,
+  //     req.organizationId,
   //     query,
   //   );
   // }
@@ -39,13 +39,13 @@ export class AnalyticsController {
   //   @Query() query: AnalyticsQueryDto,
   // ) {
   //   return this.analyticsService.getRecipientAnalytics(
-  //     req.organization.id,
+  //     req.organizationId,
   //     query,
   //   );
   // }
 
   // @Get('exports')
   // exportAnalytics(@Req() req: Request, @Query() query: AnalyticsQueryDto) {
-  //   return this.analyticsService.exportAnalytics(req.organization.id, query);
+  //   return this.analyticsService.exportAnalytics(req.organizationId, query);
   // }
 }

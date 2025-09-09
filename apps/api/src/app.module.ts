@@ -17,6 +17,7 @@ import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { VerificationModule } from './modules/verification/verification.module';
 import { AIModule } from './modules/ai/ai.module';
 import { AssetsModule } from './modules/assets/assets.module';
+import { SharedModule } from './modules/shared/shared.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AssetsModule } from './modules/assets/assets.module';
     AnalyticsModule,
     AIModule,
     AssetsModule,
+    SharedModule,
   ],
 })
 export class AppModule {}
