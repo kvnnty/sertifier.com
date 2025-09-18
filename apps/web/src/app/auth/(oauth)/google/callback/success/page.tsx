@@ -33,7 +33,7 @@ const GoogleSuccessOauthCallback = () => {
     try {
       const response = await axiosClient.get("/users/me");
       dispatch(login({ user: response.data, accessToken: accessToken }));
-      router.replace("/portal/user");
+      router.replace("/portal");
     } catch (error: any) {
       toast.error(error.response?.data.message || error.message || "Something went wrong processing your request");
       router.push("/");

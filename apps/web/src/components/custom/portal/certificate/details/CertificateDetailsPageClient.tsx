@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { mockDetailsData } from "@/lib/mock/mockDetailsData";
 import { ColumnConfig } from "@/components/custom/DynamicTable";
 import DynamicTable from "@/components/custom/DynamicTable";
-import CustomPagination from "@/components/custom/portal/user/Pagination";
+import CustomPagination from "@/components/custom/portal/Pagination";
 import { CredentialTitle } from "@/components/custom/portal/certificate/details/CredentialTitle";
 import RichTextEditor from "@/components/custom/RichTextEditor";
 import Skills from "@/components/custom/portal/certificate/details/Skills";

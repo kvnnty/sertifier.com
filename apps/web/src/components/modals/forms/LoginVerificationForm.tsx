@@ -81,7 +81,7 @@ export default function LoginVerificationForm({ email }: LoginVerificationFormPr
         description: `Welcome back, ${user.firstName}`,
       });
       closeAuthModal();
-      router.push("/portal/user");
+      router.push("/portal");
     } catch (error: any) {
       toast.error(error.response.data.message || "Error verifying OTP");
     } finally {

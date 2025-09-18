@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Copy, Edit, Trash, Plus, Search, PlusCircle } from "lucide-react";
 import { mockEmailTemplateData } from "@/lib/mock/mockEmailTemplates";
 import DynamicTable, { ColumnConfig } from "@/components/custom/DynamicTable";
-import CustomPagination from "@/components/custom/portal/user/Pagination";
+import CustomPagination from "@/components/custom/portal/Pagination";
 import { Input } from "@/components/ui/input";
 
 interface EmailTemplate {

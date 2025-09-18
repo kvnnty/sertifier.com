@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Edit, Copy, Trash, PlusCircle } from "lucide-react";
 import { mockCredentialData } from "@/lib/mock/mockCredentials";
 import DynamicTable, { ColumnConfig } from "@/components/custom/DynamicTable";
-import CustomPagination from "@/components/custom/portal/user/Pagination";
-import CredentialHeader from "@/components/custom/portal/user/CredentialHeader";
+import CustomPagination from "@/components/custom/portal/Pagination";
+import CredentialHeader from "@/components/custom/portal/CredentialHeader";
 
 interface CredentialDetail {
   detail: {

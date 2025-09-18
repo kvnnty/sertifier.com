@@ -100,9 +100,9 @@ export default function SideBar({ onHoverChange }: SideBarProps) {
           </div>
           <div>
             <Link
-              href="/portal/user/profile/settings"
+              href="/portal/profile/settings"
               className={`group/link flex items-center gap-4 px-4 py-3 rounded-lg duration-700 text-gray-700 hover:bg-green-50 group-hover:w-64 transition-all ${
-                pathname === "/portal/user/settings" ? "bg-green-50" : ""
+                pathname === "/portal/settings" ? "bg-green-50" : ""
               }`}>
               <span className="transition-all">
                 <Settings />

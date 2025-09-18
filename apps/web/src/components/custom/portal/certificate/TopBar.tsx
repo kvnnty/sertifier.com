@@ -15,14 +15,14 @@ const steps = [
     href: "/portal/certificate/campaign-options",
     status: "upcoming",
   },
-  { name: "Recipients", href: "/portal/user/recipients", status: "upcoming" },
+  { name: "Recipients", href: "/portal/recipients", status: "upcoming" },
   { name: "Preview and Send", href: "#", status: "upcoming" },
 ];
 
 const TopBar = () => {
   return (
     <header className="flex h-20 items-center justify-between border-b bg-white px-12 sticky top-0 z-50">
-      <Link href="/portal/user/compaigns">
+      <Link href="/portal/compaigns">
         <Button
           variant="ghost"
           className="hover:rounded-full duration-300 cursor-pointer"

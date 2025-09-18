@@ -13,7 +13,7 @@ import { Edit, Copy, Trash, Plus, Funnel, PlusCircle } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import DynamicTable from "@/components/custom/DynamicTable";
-import CustomPagination from "@/components/custom/portal/user/Pagination";
+import CustomPagination from "@/components/custom/portal/Pagination";
 
 interface List {
   id: string;

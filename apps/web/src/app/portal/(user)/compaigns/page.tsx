@@ -13,7 +13,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import EmptyCompaign from "@/components/custom/portal/user/EmptyCompaign";
+import EmptyCompaign from "@/components/custom/portal/EmptyCompaign";
 
 const credentials = [
   {

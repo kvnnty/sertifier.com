@@ -106,13 +106,13 @@ export default function ProfileDropdown() {
           </div>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <Link href="/portal/user/organizations/create">
+        <Link href="/portal/organizations/create">
           <DropdownMenuItem>
             <Plus />
             Create Organization
           </DropdownMenuItem>
         </Link>
-        <Link href="/portal/user/organizations/settings">
+        <Link href="/portal/organizations/settings">
           <DropdownMenuItem>
             <Users />
             Organization Settings

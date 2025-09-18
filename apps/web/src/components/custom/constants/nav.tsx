@@ -20,7 +20,7 @@ export const SIDEBAR_NAV_ITEMS = [
   {
     label: "Dashboard",
     icon: <LayoutDashboard />,
-    href: "/portal/user",
+    href: "/portal",
   },
   {
     label: "Send Certificates",
@@ -30,22 +30,22 @@ export const SIDEBAR_NAV_ITEMS = [
   {
     label: "Campaigns",
     icon: <SendHorizonal />,
-    href: "/portal/user/compaigns",
+    href: "/portal/compaigns",
   },
   {
     label: "Verification Page",
     icon: <Globe />,
-    href: "/portal/user/verification-page",
+    href: "/portal/verification-page",
   },
   {
     label: "Recipients",
     icon: <Users />,
-    href: "/portal/user/recipients",
+    href: "/portal/recipients",
   },
   {
     label: "Analytics",
     icon: <ChartColumn />,
-    href: "/portal/user/analytics",
+    href: "/portal/analytics",
   },
   {
     label: "Components",
@@ -53,17 +53,17 @@ export const SIDEBAR_NAV_ITEMS = [
     children: [
       {
         label: "Credential Designs",
-        href: "/portal/user/components/credential-designs",
+        href: "/portal/components/credential-designs",
         icon: <Palette className="w-5 h-5" />,
       },
       {
         label: "Credential Details",
-        href: "/portal/user/components/credential-details",
+        href: "/portal/components/credential-details",
         icon: <BookOpen className="w-5 h-5" />,
       },
       {
         label: "Email Templates",
-        href: "/portal/user/components/email-templates",
+        href: "/portal/components/email-templates",
         icon: <Mail className="w-5 h-5" />,
       },
     ],
@@ -74,22 +74,22 @@ export const SIDEBAR_NAV_ITEMS = [
     children: [
       {
         label: "Collections",
-        href: "/portal/user/advanced/collections",
+        href: "/portal/advanced/collections",
         icon: <ScanQrCode className="w-5 h-5" />,
       },
       {
         label: "Integrations",
-        href: "/portal/user/advanced/integrations",
+        href: "/portal/advanced/integrations",
         icon: <Network className="w-5 h-5" />,
       },
       {
         label: "Ads",
-        href: "/portal/user/advanced/ads",
+        href: "/portal/advanced/ads",
         icon: <Megaphone className="w-5 h-5" />,
       },
       {
         label: "Customer Portal",
-        href: "/portal/user/advanced/customer-portal",
+        href: "/portal/advanced/customer-portal",
         icon: <LayoutPanelTop className="w-5 h-5" />,
       },
     ],

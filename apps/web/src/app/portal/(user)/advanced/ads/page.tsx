@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { mockAdsData } from "@/lib/mock/mockAdsData";
 import DynamicTable, { ColumnConfig } from "@/components/custom/DynamicTable";
-import CustomPagination from "@/components/custom/portal/user/Pagination";
+import CustomPagination from "@/components/custom/portal/Pagination";
 
 interface Ad {
   id: string;

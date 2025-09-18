@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CredentialsTab from "@/components/custom/portal/user/analytics/CredentialsTab";
-import SummaryTab from "@/components/custom/portal/user/analytics/SummaryTab";
-import RecipientEngagementTab from "@/components/custom/portal/user/analytics/RecipientEngagement";
-import MarketingTab from "@/components/custom/portal/user/analytics/marketing/MarketingTab";
-import RecipientDirectory from "@/components/custom/portal/user/analytics/RecipientDirectory";
-import EventLogsTab from "@/components/custom/portal/user/analytics/EventLogs";
+import CredentialsTab from "@/components/custom/portal/analytics/CredentialsTab";
+import SummaryTab from "@/components/custom/portal/analytics/SummaryTab";
+import RecipientEngagementTab from "@/components/custom/portal/analytics/RecipientEngagement";
+import MarketingTab from "@/components/custom/portal/analytics/marketing/MarketingTab";
+import RecipientDirectory from "@/components/custom/portal/analytics/RecipientDirectory";
+import EventLogsTab from "@/components/custom/portal/analytics/EventLogs";
 
 const tabs = [
   { id: "summary", label: "Summary" },
@@ -44,13 +44,13 @@ export default function AnalyticsClient({
     const validTab = tabs.find((tab) => tab.id === initialTab.toLowerCase());
     if (!validTab) {
       setActiveTab("summary");
-      router.replace("/portal/user/analytics?active=summary");
+      router.replace("/portal/analytics?active=summary");
     }
   }, [initialTab, router]);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    router.push(`/portal/user/analytics/?active=${value}`);
+    router.push(`/portal/analytics/?active=${value}`);
   };
 
   return (

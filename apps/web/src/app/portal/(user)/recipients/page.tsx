@@ -1,4 +1,4 @@
-import RecipientsClient from "@/components/custom/portal/user/RecipientsClient";
+import RecipientsClient from "@/components/custom/portal/RecipientsClient";
 import { Suspense } from "react";
 
 export default function AnalyticsPage() {

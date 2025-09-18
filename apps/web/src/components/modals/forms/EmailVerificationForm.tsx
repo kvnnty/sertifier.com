@@ -86,7 +86,7 @@ export default function EmailVerificationForm({ email }: EmailVerificationFormPr
         const { user, accessToken } = response.data;
         dispatch(login({ user, accessToken }));
         closeAuthModal();
-        router.push("/portal/user");
+        router.push("/portal");
       }
       
     } catch (error: any) {

@@ -1,6 +1,6 @@
 "use client"
 
-import AnalyticsClient from "@/components/custom/portal/user/analytics/AnalyticsClient";
+import AnalyticsClient from "@/components/custom/portal/analytics/AnalyticsClient";
 import { Suspense } from "react";
 
 const analyticsData = {
