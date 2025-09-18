@@ -53,6 +53,7 @@ export default function SignupPage() {
 
       openAuthModal("email_verification", { email: data.email });
     } catch (error: any) {
+      console.log(error)
       const errorMessage = error.response?.data?.message || "An error occurred during registration";
       toast.error("Sign up failed", {
         description: errorMessage,

@@ -10,7 +10,6 @@ import { CredentialsController } from './credentials.controller';
 import { CredentialsService } from './credentials.service';
 import { Credential, CredentialSchema } from './schema/credential.schema';
 import { AnalyticsModule } from '../analytics/analytics.module';
-import { SharedModule } from '../shared/shared.module';
 
 @Module({
   imports: [
@@ -22,7 +21,6 @@ import { SharedModule } from '../shared/shared.module';
     RecipientsModule,
     NotificationsModule,
     AnalyticsModule,
-    SharedModule,
   ],
   controllers: [CredentialsController],
   providers: [CredentialsService, PDFService, QRService],

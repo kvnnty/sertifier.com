@@ -4,8 +4,10 @@ import { VerificationService } from './verification.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Verification, VerificationSchema } from './schema/verification.schema';
 import { AnalyticsModule } from '../analytics/analytics.module';
-import { Credential, CredentialSchema } from '../credentials/schema/credential.schema';
-import { SharedModule } from '../shared/shared.module';
+import {
+  Credential,
+  CredentialSchema,
+} from '../credentials/schema/credential.schema';
 
 @Module({
   imports: [
@@ -13,7 +15,6 @@ import { SharedModule } from '../shared/shared.module';
       { name: Verification.name, schema: VerificationSchema },
       { name: Credential.name, schema: CredentialSchema },
     ]),
-    SharedModule,
     AnalyticsModule,
   ],
   controllers: [VerificationController],

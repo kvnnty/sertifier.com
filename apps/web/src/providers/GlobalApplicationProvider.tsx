@@ -18,7 +18,7 @@ const GlobalApplicationProvider = ({ children }: { children: React.ReactNode }) 
         </ReduxProvider>
       </PageTransition>
       <Next13ProgressBar height="4px" color="#43A047" options={{ showSpinner: true }} showOnShallow />
-      <Toaster position="top-center" />
+      <Toaster richColors position="top-center" />
     </Fragment>
   );
 };

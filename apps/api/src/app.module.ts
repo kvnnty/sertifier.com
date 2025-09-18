@@ -17,7 +17,7 @@ import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { VerificationModule } from './modules/verification/verification.module';
 import { AIModule } from './modules/ai/ai.module';
 import { AssetsModule } from './modules/assets/assets.module';
-import { SharedModule } from './modules/shared/shared.module';
+import { OrganizationGuard } from './common/guards/organization.guard';
 
 @Module({
   imports: [
@@ -41,7 +41,7 @@ import { SharedModule } from './modules/shared/shared.module';
     AnalyticsModule,
     AIModule,
     AssetsModule,
-    SharedModule,
   ],
+  providers: [OrganizationGuard],
 })
 export class AppModule {}

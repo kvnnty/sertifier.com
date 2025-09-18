@@ -7,7 +7,6 @@ import {
   Credential,
   CredentialSchema,
 } from '../credentials/schema/credential.schema';
-import { SharedModule } from '../shared/shared.module';
 
 @Module({
   imports: [
@@ -15,7 +14,6 @@ import { SharedModule } from '../shared/shared.module';
       { name: Recipient.name, schema: RecipientSchema },
       { name: Credential.name, schema: CredentialSchema },
     ]),
-    SharedModule,
   ],
   controllers: [RecipientsController],
   providers: [RecipientsService],

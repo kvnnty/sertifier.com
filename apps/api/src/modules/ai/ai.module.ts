@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AIController } from './ai.controller';
 import { AIService } from './ai.service';
-import { SharedModule } from '../shared/shared.module';
 
 @Module({
-  providers: [AIService, SharedModule],
+  providers: [AIService],
   exports: [AIService],
   controllers: [AIController],
 })

@@ -5,12 +5,14 @@ import axiosClient from "./axios.config";
 export function attachAxiosInterceptors(store: Store) {
   axiosClient.interceptors.request.use(
     (config) => {
-      const accessToken = store.getState().auth.accessToken;
-      const organizationId = store.getState().organization.currentOrganization._id;
+      const state = store.getState();
+      const accessToken = state.auth.accessToken;
+      const currentOrg = state.organization.currentOrganization;
 
       if (accessToken) config.headers["Authorization"] = `Bearer ${accessToken}`;
-      if (organizationId) config.headers['x-organization-id'] =  organizationId;
-     
+      if (currentOrg && currentOrg._id) {
+        config.headers["x-organization-id"] = currentOrg._id;
+      }
       return config;
     },
     (error) => Promise.reject(error)
