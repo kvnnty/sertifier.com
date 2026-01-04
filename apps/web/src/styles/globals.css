@@ -150,6 +150,10 @@
   display: none;
 }
 
+button {
+  cursor: pointer;
+}
+
 /* Tab Animation */
 @media (max-width: 640px) {
   .overflow-x-auto {
